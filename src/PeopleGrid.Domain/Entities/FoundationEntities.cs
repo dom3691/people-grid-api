@@ -20,11 +20,73 @@ public sealed class User : SoftDeleteEntity
     public string Email { get; set; } = string.Empty;
     public string UserName { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
+    public DateTime PasswordChangedAt { get; set; } = DateTime.UtcNow;
     public bool IsActive { get; set; } = true;
     public int FailedLoginCount { get; set; }
     public DateTime? LockoutEnd { get; set; }
     public DateTime? LastLoginAt { get; set; }
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+    public ICollection<UserSession> Sessions { get; set; } = new List<UserSession>();
+    public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+    public ICollection<PasswordHistory> PasswordHistories { get; set; } = new List<PasswordHistory>();
+}
+
+public sealed class UserSession : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string RefreshTokenHash { get; set; } = string.Empty;
+    public string? IpAddress { get; set; }
+    public string? UserAgent { get; set; }
+    public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? EndedAt { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class RefreshToken : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string TokenHash { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+    public DateTime? RevokedAt { get; set; }
+    public Guid? ReplacedByTokenId { get; set; }
+    public RefreshToken? ReplacedByToken { get; set; }
+    public string? IpAddress { get; set; }
+    public string? UserAgent { get; set; }
+    public bool IsActive => RevokedAt is null && ExpiresAt > DateTime.UtcNow;
+}
+
+public sealed class PasswordResetToken : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string TokenHash { get; set; } = string.Empty;
+    public DateTime ExpiresAt { get; set; }
+    public DateTime? UsedAt { get; set; }
+    public string? RequestedIpAddress { get; set; }
+    public bool IsActive => UsedAt is null && ExpiresAt > DateTime.UtcNow;
+}
+
+public sealed class PasswordHistory : AuditableEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string PasswordHash { get; set; } = string.Empty;
+    public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class LoginAttempt : BaseEntity
+{
+    public Guid? UserId { get; set; }
+    public User? User { get; set; }
+    public string EmailOrUserName { get; set; } = string.Empty;
+    public bool Success { get; set; }
+    public string? FailureReason { get; set; }
+    public string? IpAddress { get; set; }
+    public string? UserAgent { get; set; }
+    public DateTime OccurredAt { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class Role : SoftDeleteEntity

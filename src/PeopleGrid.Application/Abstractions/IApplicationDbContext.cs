@@ -3,9 +3,14 @@ using PeopleGrid.Domain.Entities;
 
 namespace PeopleGrid.Application.Abstractions;
 
-public interface IApplicationDbContext
+public interface IApplicationDbContext : IAsyncDisposable
 {
     DbSet<User> Users { get; set; }
+    DbSet<UserSession> UserSessions { get; set; }
+    DbSet<RefreshToken> RefreshTokens { get; set; }
+    DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    DbSet<PasswordHistory> PasswordHistories { get; set; }
+    DbSet<LoginAttempt> LoginAttempts { get; set; }
     DbSet<Role> Roles { get; set; }
     DbSet<Permission> Permissions { get; set; }
     DbSet<UserRole> UserRoles { get; set; }
@@ -28,4 +33,9 @@ public interface IApplicationDbContext
     DbSet<SystemSetting> SystemSettings { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+}
+
+public interface IApplicationDbContextFactory
+{
+    IApplicationDbContext CreateDbContext(string connectionString);
 }

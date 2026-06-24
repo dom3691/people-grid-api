@@ -18,6 +18,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
+        services.Configure<AuthOptions>(configuration.GetSection("Auth"));
         services.AddHttpContextAccessor();
 
         services.AddDbContext<PlatformDbContext>(options =>
@@ -30,6 +31,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IApplicationDbContextFactory, ApplicationDbContextFactory>();
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();

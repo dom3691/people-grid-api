@@ -9,6 +9,11 @@ namespace PeopleGrid.Infrastructure.Persistence;
 public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUser) : DbContext(options), IApplicationDbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<UserSession> UserSessions { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+    public DbSet<PasswordHistory> PasswordHistories { get; set; }
+    public DbSet<LoginAttempt> LoginAttempts { get; set; }
     public DbSet<Role> Roles { get; set; }
     public DbSet<Permission> Permissions { get; set; }
     public DbSet<UserRole> UserRoles { get; set; }
@@ -42,6 +47,18 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
         modelBuilder.Entity<User>().HasIndex(x => x.Email).IsUnique();
         modelBuilder.Entity<User>().HasIndex(x => x.UserName).IsUnique();
+        modelBuilder.Entity<User>().Property(x => x.Email).HasMaxLength(256);
+        modelBuilder.Entity<User>().Property(x => x.UserName).HasMaxLength(100);
+        modelBuilder.Entity<RefreshToken>().HasIndex(x => x.TokenHash);
+        modelBuilder.Entity<RefreshToken>().HasIndex(x => x.UserId);
+        modelBuilder.Entity<PasswordResetToken>().HasIndex(x => x.TokenHash);
+        modelBuilder.Entity<PasswordResetToken>().HasIndex(x => x.UserId);
+        modelBuilder.Entity<PasswordHistory>().HasIndex(x => x.UserId);
+        modelBuilder.Entity<PasswordHistory>().HasIndex(x => x.ChangedAt);
+        modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.EmailOrUserName);
+        modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.UserId);
+        modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.OccurredAt);
+        modelBuilder.Entity<SystemSetting>().HasIndex(x => x.Key).IsUnique();
         modelBuilder.Entity<Role>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Permission>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Department>().HasIndex(x => x.Code).IsUnique();
@@ -49,6 +66,11 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<Employee>().HasIndex(x => x.WorkEmail).IsUnique();
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         modelBuilder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
+        modelBuilder.Entity<RefreshToken>()
+            .HasOne(x => x.ReplacedByToken)
+            .WithMany()
+            .HasForeignKey(x => x.ReplacedByTokenId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {

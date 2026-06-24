@@ -55,7 +55,8 @@ public sealed class RolePermissionSeeder
                 Email = "admin@peoplegrid.local",
                 UserName = "admin",
                 EmployeeNumber = "PG-0001",
-                PasswordHash = PasswordHasher.Hash("Admin@12345")
+                PasswordHash = PasswordHasher.Hash("Admin@12345"),
+                PasswordChangedAt = DateTime.UtcNow
             };
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync(cancellationToken);

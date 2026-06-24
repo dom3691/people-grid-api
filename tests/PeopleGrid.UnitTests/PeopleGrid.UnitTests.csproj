@@ -22,6 +22,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\PeopleGrid.Application\PeopleGrid.Application.csproj" />
     <ProjectReference Include="..\..\src\PeopleGrid.Domain\PeopleGrid.Domain.csproj" />
+    <ProjectReference Include="..\..\src\PeopleGrid.Infrastructure\PeopleGrid.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

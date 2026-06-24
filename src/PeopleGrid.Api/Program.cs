@@ -30,6 +30,7 @@ builder.Services.AddCors(options =>
 var app = builder.Build();
 
 app.UseSerilogRequestLogging();
+app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
