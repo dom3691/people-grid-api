@@ -1,0 +1,6 @@
+@PeopleGrid.Api_HostAddress = http://localhost:5053
+
+GET {{PeopleGrid.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/PeopleGrid.Api/PeopleGrid.Api.csproj" />
+    <Project Path="src/PeopleGrid.Application/PeopleGrid.Application.csproj" />
+    <Project Path="src/PeopleGrid.Domain/PeopleGrid.Domain.csproj" />
+    <Project Path="src/PeopleGrid.Infrastructure/PeopleGrid.Infrastructure.csproj" />
+    <Project Path="src/PeopleGrid.Shared/PeopleGrid.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/PeopleGrid.IntegrationTests/PeopleGrid.IntegrationTests.csproj" />
+    <Project Path="tests/PeopleGrid.UnitTests/PeopleGrid.UnitTests.csproj" />
+  </Folder>
+</Solution>
