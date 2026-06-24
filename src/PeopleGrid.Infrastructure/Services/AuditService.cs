@@ -1,10 +1,9 @@
 using PeopleGrid.Application.Abstractions;
 using PeopleGrid.Domain.Entities;
-using PeopleGrid.Infrastructure.Persistence;
 
 namespace PeopleGrid.Infrastructure.Services;
 
-public sealed class AuditService(ApplicationDbContext dbContext, ICurrentUserService currentUser) : IAuditService
+public sealed class AuditService(IApplicationDbContext dbContext, ICurrentUserService currentUser) : IAuditService
 {
     public async Task TrackAsync(string module, string action, string entityType, string? entityId = null, string outcome = "Success", CancellationToken cancellationToken = default)
     {

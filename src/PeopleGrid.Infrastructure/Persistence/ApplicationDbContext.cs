@@ -6,29 +6,29 @@ using System.Linq.Expressions;
 
 namespace PeopleGrid.Infrastructure.Persistence;
 
-public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUser) : DbContext(options)
+public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentUserService currentUser) : DbContext(options), IApplicationDbContext
 {
-    public DbSet<User> Users => Set<User>();
-    public DbSet<Role> Roles => Set<Role>();
-    public DbSet<Permission> Permissions => Set<Permission>();
-    public DbSet<UserRole> UserRoles => Set<UserRole>();
-    public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
-    public DbSet<Department> Departments => Set<Department>();
-    public DbSet<Unit> Units => Set<Unit>();
-    public DbSet<Branch> Branches => Set<Branch>();
-    public DbSet<JobTitle> JobTitles => Set<JobTitle>();
-    public DbSet<GradeLevel> GradeLevels => Set<GradeLevel>();
-    public DbSet<Employee> Employees => Set<Employee>();
-    public DbSet<EmployeeDocument> EmployeeDocuments => Set<EmployeeDocument>();
-    public DbSet<HRRequest> HRRequests => Set<HRRequest>();
-    public DbSet<ApprovalFlow> ApprovalFlows => Set<ApprovalFlow>();
-    public DbSet<ApprovalStep> ApprovalSteps => Set<ApprovalStep>();
-    public DbSet<ApprovalRequest> ApprovalRequests => Set<ApprovalRequest>();
-    public DbSet<LeaveRequest> LeaveRequests => Set<LeaveRequest>();
-    public DbSet<AttendanceRecord> AttendanceRecords => Set<AttendanceRecord>();
-    public DbSet<Notification> Notifications => Set<Notification>();
-    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
-    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+    public DbSet<User> Users { get; set; }
+    public DbSet<Role> Roles { get; set; }
+    public DbSet<Permission> Permissions { get; set; }
+    public DbSet<UserRole> UserRoles { get; set; }
+    public DbSet<RolePermission> RolePermissions { get; set; }
+    public DbSet<Department> Departments { get; set; }
+    public DbSet<Unit> Units { get; set; }
+    public DbSet<Branch> Branches { get; set; }
+    public DbSet<JobTitle> JobTitles { get; set; }
+    public DbSet<GradeLevel> GradeLevels { get; set; }
+    public DbSet<Employee> Employees { get; set; }
+    public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
+    public DbSet<HRRequest> HRRequests { get; set; }
+    public DbSet<ApprovalFlow> ApprovalFlows { get; set; }
+    public DbSet<ApprovalStep> ApprovalSteps { get; set; }
+    public DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+    public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+    public DbSet<Notification> Notifications { get; set; }
+    public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<SystemSetting> SystemSettings { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

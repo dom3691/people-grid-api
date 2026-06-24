@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using PeopleGrid.Application.Abstractions;
 using PeopleGrid.Application.Auth.DTOs;
-using PeopleGrid.Infrastructure.Persistence;
 using PeopleGrid.Infrastructure.Security;
 using PeopleGrid.Shared.Exceptions;
 
@@ -15,7 +14,7 @@ public interface IAuthService
 public sealed class AuthService(
     ITenantConnectionProvider tenantConnectionProvider,
     ICurrentTenantService currentTenant,
-    ApplicationDbContext dbContext,
+    IApplicationDbContext dbContext,
     IJwtTokenService jwtTokenService,
     IAuditService auditService) : IAuthService
 {
@@ -26,7 +25,10 @@ public sealed class AuthService(
         currentTenant.SetTenant(request.TenantCode.Trim().ToUpperInvariant(), null, connectionString);
 
         var user = await dbContext.Users
-            .Include(x => x.UserRoles).ThenInclude(x => x.Role)!.ThenInclude(x => x.RolePermissions).ThenInclude(x => x.Permission)
+            .Include(x => x.UserRoles)
+            .ThenInclude(x => x.Role!)
+            .ThenInclude(x => x.RolePermissions)
+            .ThenInclude(x => x.Permission)
             .FirstOrDefaultAsync(x => x.Email == request.EmailOrUserName || x.UserName == request.EmailOrUserName, cancellationToken)
             ?? throw new UnauthorizedAppException("Invalid credentials.");
 

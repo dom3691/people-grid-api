@@ -29,11 +29,7 @@ public static class DependencyInjection
             options.UseSqlServer(provider.GetTenantConnectionString());
         });
 
-        services.AddDbContextFactory<ApplicationDbContext>((sp, options) =>
-        {
-            var provider = sp.GetRequiredService<ITenantConnectionProvider>();
-            options.UseSqlServer(provider.GetTenantConnectionString());
-        }, ServiceLifetime.Scoped);
+        services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
 
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<ICurrentTenantService, CurrentTenantService>();

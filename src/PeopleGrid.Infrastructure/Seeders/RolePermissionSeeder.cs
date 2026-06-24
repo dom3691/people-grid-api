@@ -1,14 +1,14 @@
 using Microsoft.EntityFrameworkCore;
+using PeopleGrid.Application.Abstractions;
 using PeopleGrid.Application.Security;
 using PeopleGrid.Domain.Entities;
-using PeopleGrid.Infrastructure.Persistence;
 using PeopleGrid.Infrastructure.Security;
 
 namespace PeopleGrid.Infrastructure.Seeders;
 
 public sealed class RolePermissionSeeder
 {
-    public async Task SeedAsync(ApplicationDbContext dbContext, CancellationToken cancellationToken = default)
+    public async Task SeedAsync(IApplicationDbContext dbContext, CancellationToken cancellationToken = default)
     {
         foreach (var permissionCode in PermissionConstants.All)
         {
