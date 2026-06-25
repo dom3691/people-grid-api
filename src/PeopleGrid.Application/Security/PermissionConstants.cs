@@ -12,12 +12,13 @@ public static class PermissionConstants
     public const string ReportExport = "Report.Export";
     public const string SettingsManage = "Settings.Manage";
     public const string AuditView = "Audit.View";
+    public const string AuditExport = "Audit.Export";
 
     public static readonly string[] All =
     [
         EmployeeView, EmployeeCreate, EmployeeEdit, EmployeeDeactivate,
         LeaveApply, LeaveApprove, PayrollProcess, ReportExport,
-        SettingsManage, AuditView,
+        SettingsManage, AuditView, AuditExport,
         "User.View", "User.Create", "User.Edit", "User.Deactivate",
         "Role.Manage", "Permission.Manage", "Department.Manage",
         "Approval.Manage", "Notification.View", "Tenant.Manage"

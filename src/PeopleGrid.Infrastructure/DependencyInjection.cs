@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PeopleGrid.Application.Abstractions;
+using PeopleGrid.Application.Features.AuditLogs.Interfaces;
 using PeopleGrid.Application.Features.Organization.Interfaces;
 using PeopleGrid.Application.Features.Roles.Interfaces;
 using PeopleGrid.Application.Features.Settings.Interfaces;
@@ -51,6 +52,7 @@ public static class DependencyInjection
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IOrganizationService, OrganizationService>();
         services.AddScoped<ISettingsService, SettingsService>();
+        services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<RolePermissionSeeder>();
 
         return services;
