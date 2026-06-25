@@ -6,6 +6,7 @@ namespace PeopleGrid.Application.Abstractions;
 public interface IApplicationDbContext : IAsyncDisposable
 {
     DbSet<User> Users { get; set; }
+    DbSet<UserProfile> UserProfiles { get; set; }
     DbSet<UserSession> UserSessions { get; set; }
     DbSet<RefreshToken> RefreshTokens { get; set; }
     DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
@@ -20,6 +21,7 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<Branch> Branches { get; set; }
     DbSet<JobTitle> JobTitles { get; set; }
     DbSet<GradeLevel> GradeLevels { get; set; }
+    DbSet<EmploymentType> EmploymentTypes { get; set; }
     DbSet<Employee> Employees { get; set; }
     DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
     DbSet<HRRequest> HRRequests { get; set; }

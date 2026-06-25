@@ -21,6 +21,7 @@ public sealed class User : SoftDeleteEntity
     public string UserName { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime PasswordChangedAt { get; set; } = DateTime.UtcNow;
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public int FailedLoginCount { get; set; }
     public DateTime? LockoutEnd { get; set; }
@@ -30,6 +31,26 @@ public sealed class User : SoftDeleteEntity
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
     public ICollection<PasswordHistory> PasswordHistories { get; set; } = new List<PasswordHistory>();
+    public UserProfile? Profile { get; set; }
+}
+
+public sealed class UserProfile : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string LastName { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+    public Guid? UnitId { get; set; }
+    public Unit? Unit { get; set; }
+    public Guid? BranchId { get; set; }
+    public Branch? Branch { get; set; }
+    public Guid? JobTitleId { get; set; }
+    public JobTitle? JobTitle { get; set; }
+    public Guid? EmploymentTypeId { get; set; }
+    public EmploymentType? EmploymentType { get; set; }
 }
 
 public sealed class UserSession : SoftDeleteEntity
@@ -95,6 +116,7 @@ public sealed class Role : SoftDeleteEntity
     public string Code { get; set; } = string.Empty;
     public string? Description { get; set; }
     public bool IsSystemRole { get; set; }
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
@@ -115,6 +137,8 @@ public sealed class UserRole : AuditableEntity
     public User? User { get; set; }
     public Guid RoleId { get; set; }
     public Role? Role { get; set; }
+    public string? AssignedBy { get; set; }
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class RolePermission : AuditableEntity
@@ -123,6 +147,8 @@ public sealed class RolePermission : AuditableEntity
     public Role? Role { get; set; }
     public Guid PermissionId { get; set; }
     public Permission? Permission { get; set; }
+    public string? AssignedBy { get; set; }
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class Department : SoftDeleteEntity
@@ -130,8 +156,10 @@ public sealed class Department : SoftDeleteEntity
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public Guid? HeadUserId { get; set; }
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public ICollection<Unit> Units { get; set; } = new List<Unit>();
+    public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
 
 public sealed class Unit : SoftDeleteEntity
@@ -140,7 +168,9 @@ public sealed class Unit : SoftDeleteEntity
     public Department? Department { get; set; }
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
+    public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
 
 public sealed class Branch : SoftDeleteEntity
@@ -148,14 +178,22 @@ public sealed class Branch : SoftDeleteEntity
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public string? Address { get; set; }
+    public string? Country { get; set; }
+    public string? StateRegion { get; set; }
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
+    public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
 
 public sealed class JobTitle : SoftDeleteEntity
 {
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
+    public Guid? GradeLevelId { get; set; }
+    public GradeLevel? GradeLevel { get; set; }
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
+    public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
 
 public sealed class GradeLevel : SoftDeleteEntity
@@ -163,7 +201,18 @@ public sealed class GradeLevel : SoftDeleteEntity
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public int RankOrder { get; set; }
+    public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
+    public ICollection<JobTitle> JobTitles { get; set; } = new List<JobTitle>();
+}
+
+public sealed class EmploymentType : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Status { get; set; } = "Active";
+    public bool IsActive { get; set; } = true;
+    public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
 }
 
 public sealed class Employee : SoftDeleteEntity

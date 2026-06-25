@@ -30,7 +30,15 @@ public sealed class RolePermissionSeeder
             var code = roleName.Replace(" ", string.Empty).ToUpperInvariant();
             if (!await dbContext.Roles.AnyAsync(x => x.Code == code, cancellationToken))
             {
-                dbContext.Roles.Add(new Role { Name = roleName, Code = code, IsSystemRole = true });
+                dbContext.Roles.Add(new Role
+                {
+                    Name = roleName,
+                    Code = code,
+                    Description = $"{roleName} system role",
+                    IsSystemRole = true,
+                    Status = "Active",
+                    IsActive = true
+                });
             }
         }
 
@@ -42,7 +50,13 @@ public sealed class RolePermissionSeeder
         {
             if (!await dbContext.RolePermissions.AnyAsync(x => x.RoleId == superAdmin.Id && x.PermissionId == permission.Id, cancellationToken))
             {
-                dbContext.RolePermissions.Add(new RolePermission { RoleId = superAdmin.Id, PermissionId = permission.Id });
+                dbContext.RolePermissions.Add(new RolePermission
+                {
+                    RoleId = superAdmin.Id,
+                    PermissionId = permission.Id,
+                    AssignedBy = "SYSTEM",
+                    AssignedAt = DateTime.UtcNow
+                });
             }
         }
 
@@ -60,7 +74,13 @@ public sealed class RolePermissionSeeder
             };
             dbContext.Users.Add(user);
             await dbContext.SaveChangesAsync(cancellationToken);
-            dbContext.UserRoles.Add(new UserRole { UserId = user.Id, RoleId = superAdmin.Id });
+            dbContext.UserRoles.Add(new UserRole
+            {
+                UserId = user.Id,
+                RoleId = superAdmin.Id,
+                AssignedBy = "SYSTEM",
+                AssignedAt = DateTime.UtcNow
+            });
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);

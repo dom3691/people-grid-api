@@ -9,7 +9,7 @@ public sealed class PlatformDbContextFactory : IDesignTimeDbContextFactory<Platf
     public PlatformDbContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<PlatformDbContext>()
-            .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=PeopleGrid_PlatformDb;Trusted_Connection=True;TrustServerCertificate=True")
+            .UseSqlServer("Server=localhost;Database=PeopleGrid_PlatformDb;Trusted_Connection=True;TrustServerCertificate=True;")
             .Options;
 
         return new PlatformDbContext(options);
@@ -21,7 +21,7 @@ public sealed class ApplicationDbContextDesignTimeFactory : IDesignTimeDbContext
     public ApplicationDbContext CreateDbContext(string[] args)
     {
         var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=PeopleGrid_TenantTemplateDb;Trusted_Connection=True;TrustServerCertificate=True")
+            .UseSqlServer("Server=localhost;Database=PeopleGrid_TenantTemplateDb;Trusted_Connection=True;TrustServerCertificate=True;")
             .Options;
 
         return new ApplicationDbContext(options, new DesignTimeCurrentUserService());

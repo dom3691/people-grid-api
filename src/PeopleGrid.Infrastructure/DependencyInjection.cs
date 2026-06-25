@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PeopleGrid.Application.Abstractions;
+using PeopleGrid.Application.Features.Users.Interfaces;
 using PeopleGrid.Infrastructure.Email;
 using PeopleGrid.Infrastructure.Files;
 using PeopleGrid.Infrastructure.Identity;
@@ -43,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IFileStorageService, LocalFileStorageService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserService, UserService>();
         services.AddScoped<RolePermissionSeeder>();
 
         return services;
