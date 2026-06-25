@@ -23,6 +23,11 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<JobTitle> JobTitles { get; set; }
     DbSet<GradeLevel> GradeLevels { get; set; }
     DbSet<EmploymentType> EmploymentTypes { get; set; }
+    DbSet<CompanyProfile> CompanyProfiles { get; set; }
+    DbSet<ApprovalLevel> ApprovalLevels { get; set; }
+    DbSet<LeaveType> LeaveTypes { get; set; }
+    DbSet<PublicHoliday> PublicHolidays { get; set; }
+    DbSet<SystemParameter> SystemParameters { get; set; }
     DbSet<Employee> Employees { get; set; }
     DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
     DbSet<HRRequest> HRRequests { get; set; }
@@ -33,6 +38,7 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<AttendanceRecord> AttendanceRecords { get; set; }
     DbSet<Notification> Notifications { get; set; }
     DbSet<AuditLog> AuditLogs { get; set; }
+    DbSet<AuditLogDetail> AuditLogDetails { get; set; }
     DbSet<SystemSetting> SystemSettings { get; set; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

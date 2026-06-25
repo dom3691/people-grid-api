@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PeopleGrid.Application.Abstractions;
 using PeopleGrid.Application.Features.Organization.Interfaces;
 using PeopleGrid.Application.Features.Roles.Interfaces;
+using PeopleGrid.Application.Features.Settings.Interfaces;
 using PeopleGrid.Application.Features.Users.Interfaces;
 using PeopleGrid.Infrastructure.Email;
 using PeopleGrid.Infrastructure.Files;
@@ -49,6 +50,7 @@ public static class DependencyInjection
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<ISettingsService, SettingsService>();
         services.AddScoped<RolePermissionSeeder>();
 
         return services;

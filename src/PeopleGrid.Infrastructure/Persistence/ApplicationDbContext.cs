@@ -26,6 +26,11 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<JobTitle> JobTitles { get; set; }
     public DbSet<GradeLevel> GradeLevels { get; set; }
     public DbSet<EmploymentType> EmploymentTypes { get; set; }
+    public DbSet<CompanyProfile> CompanyProfiles { get; set; }
+    public DbSet<ApprovalLevel> ApprovalLevels { get; set; }
+    public DbSet<LeaveType> LeaveTypes { get; set; }
+    public DbSet<PublicHoliday> PublicHolidays { get; set; }
+    public DbSet<SystemParameter> SystemParameters { get; set; }
     public DbSet<Employee> Employees { get; set; }
     public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
     public DbSet<HRRequest> HRRequests { get; set; }
@@ -36,6 +41,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
+    public DbSet<AuditLogDetail> AuditLogDetails { get; set; }
     public DbSet<SystemSetting> SystemSettings { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -71,6 +77,41 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.EmailOrUserName);
         modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.UserId);
         modelBuilder.Entity<LoginAttempt>().HasIndex(x => x.OccurredAt);
+        modelBuilder.Entity<LoginAttempt>().HasIndex(x => new { x.OccurredAt, x.Success });
+        modelBuilder.Entity<LoginAttempt>().HasIndex(x => new { x.EmailOrUserName, x.OccurredAt });
+        modelBuilder.Entity<LoginAttempt>().Property(x => x.EmailOrUserName).HasMaxLength(256);
+        modelBuilder.Entity<LoginAttempt>().Property(x => x.FailureReason).HasMaxLength(200);
+        modelBuilder.Entity<LoginAttempt>().Property(x => x.IpAddress).HasMaxLength(100);
+        modelBuilder.Entity<LoginAttempt>().Property(x => x.UserAgent).HasMaxLength(500);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.Timestamp);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.ActorUserId);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.Module);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.Action);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.EntityType);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.Outcome);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.Severity);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.CorrelationId);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.PartitionKey);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.RetentionUntil);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => x.ArchivedAt);
+        modelBuilder.Entity<AuditLog>().HasIndex(x => new { x.Timestamp, x.Module, x.Action });
+        modelBuilder.Entity<AuditLog>().HasIndex(x => new { x.ActorUserId, x.Timestamp });
+        modelBuilder.Entity<AuditLog>().HasIndex(x => new { x.EntityType, x.EntityId, x.Timestamp });
+        modelBuilder.Entity<AuditLog>().HasIndex(x => new { x.Module, x.EntityType, x.Timestamp });
+        modelBuilder.Entity<AuditLog>().Property(x => x.ActorUserId).HasMaxLength(100);
+        modelBuilder.Entity<AuditLog>().Property(x => x.Module).HasMaxLength(100);
+        modelBuilder.Entity<AuditLog>().Property(x => x.Action).HasMaxLength(100);
+        modelBuilder.Entity<AuditLog>().Property(x => x.EntityType).HasMaxLength(150);
+        modelBuilder.Entity<AuditLog>().Property(x => x.EntityId).HasMaxLength(100);
+        modelBuilder.Entity<AuditLog>().Property(x => x.Outcome).HasMaxLength(50);
+        modelBuilder.Entity<AuditLog>().Property(x => x.Severity).HasMaxLength(50);
+        modelBuilder.Entity<AuditLog>().Property(x => x.IpAddress).HasMaxLength(100);
+        modelBuilder.Entity<AuditLog>().Property(x => x.UserAgent).HasMaxLength(500);
+        modelBuilder.Entity<AuditLog>().Property(x => x.CorrelationId).HasMaxLength(100);
+        modelBuilder.Entity<AuditLogDetail>().HasKey(x => x.AuditLogId);
+        modelBuilder.Entity<AuditLogDetail>().Property(x => x.OldValuesJson).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<AuditLogDetail>().Property(x => x.NewValuesJson).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<AuditLogDetail>().Property(x => x.ChangedFieldsJson).HasColumnType("nvarchar(max)");
         modelBuilder.Entity<SystemSetting>().HasIndex(x => x.Key).IsUnique();
         modelBuilder.Entity<Role>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Role>().HasIndex(x => x.Status);
@@ -122,8 +163,46 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<JobTitle>().Property(x => x.Name).HasMaxLength(150);
         modelBuilder.Entity<JobTitle>().Property(x => x.Status).HasMaxLength(50);
         modelBuilder.Entity<GradeLevel>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<GradeLevel>().HasIndex(x => x.Status);
+        modelBuilder.Entity<GradeLevel>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<GradeLevel>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<GradeLevel>().Property(x => x.Status).HasMaxLength(50);
         modelBuilder.Entity<EmploymentType>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<EmploymentType>().HasIndex(x => x.Status);
+        modelBuilder.Entity<EmploymentType>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<EmploymentType>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<EmploymentType>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.Name).HasMaxLength(200);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.RegistrationNumber).HasMaxLength(100);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.LogoPath).HasMaxLength(500);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.Address).HasMaxLength(500);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.ContactEmail).HasMaxLength(256);
+        modelBuilder.Entity<CompanyProfile>().Property(x => x.Phone).HasMaxLength(50);
+        modelBuilder.Entity<ApprovalLevel>().HasIndex(x => x.SequenceOrder).IsUnique();
+        modelBuilder.Entity<ApprovalLevel>().HasIndex(x => x.Status);
+        modelBuilder.Entity<ApprovalLevel>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<ApprovalLevel>().Property(x => x.Description).HasMaxLength(500);
+        modelBuilder.Entity<ApprovalLevel>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<LeaveType>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<LeaveType>().HasIndex(x => x.Status);
+        modelBuilder.Entity<LeaveType>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<LeaveType>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<LeaveType>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<PublicHoliday>()
+            .HasIndex(x => new { x.Name, x.HolidayDate, x.BranchId, x.LocationScope })
+            .IsUnique()
+            .HasFilter(null);
+        modelBuilder.Entity<PublicHoliday>().HasIndex(x => x.BranchId);
+        modelBuilder.Entity<PublicHoliday>().HasIndex(x => x.HolidayDate);
+        modelBuilder.Entity<PublicHoliday>().HasIndex(x => x.Status);
+        modelBuilder.Entity<PublicHoliday>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<PublicHoliday>().Property(x => x.LocationScope).HasMaxLength(100);
+        modelBuilder.Entity<PublicHoliday>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<SystemParameter>().HasIndex(x => x.Key).IsUnique();
+        modelBuilder.Entity<SystemParameter>().Property(x => x.Key).HasMaxLength(150);
+        modelBuilder.Entity<SystemParameter>().Property(x => x.Value).HasMaxLength(2000);
+        modelBuilder.Entity<SystemParameter>().Property(x => x.DataType).HasMaxLength(50);
+        modelBuilder.Entity<SystemParameter>().Property(x => x.Description).HasMaxLength(500);
         modelBuilder.Entity<Employee>().HasIndex(x => x.EmployeeNumber).IsUnique();
         modelBuilder.Entity<Employee>().HasIndex(x => x.WorkEmail).IsUnique();
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
@@ -226,6 +305,18 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             .HasForeignKey(x => x.GradeLevelId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<PublicHoliday>()
+            .HasOne(x => x.Branch)
+            .WithMany(x => x.PublicHolidays)
+            .HasForeignKey(x => x.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<AuditLog>()
+            .HasOne(x => x.Detail)
+            .WithOne(x => x.AuditLog)
+            .HasForeignKey<AuditLogDetail>(x => x.AuditLogId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {
             var parameter = Expression.Parameter(entityType.ClrType, "e");
@@ -238,7 +329,14 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
 
     private void ApplyAuditFields()
     {
+        EnforceAppendOnlyLogs();
         var now = DateTime.UtcNow;
+        foreach (var entry in ChangeTracker.Entries<AuditLog>().Where(x => x.State == EntityState.Added))
+        {
+            entry.Entity.Timestamp = entry.Entity.Timestamp == default ? now : entry.Entity.Timestamp;
+            entry.Entity.PartitionKey = entry.Entity.Timestamp.Year * 100 + entry.Entity.Timestamp.Month;
+        }
+
         foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
         {
             if (entry.State == EntityState.Added)
@@ -251,6 +349,18 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
                 entry.Entity.UpdatedAt = now;
                 entry.Entity.UpdatedBy = currentUser.UserId;
             }
+        }
+    }
+
+    private void EnforceAppendOnlyLogs()
+    {
+        var immutableEntries = ChangeTracker.Entries()
+            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt) &&
+                        (x.State == EntityState.Modified || x.State == EntityState.Deleted));
+
+        foreach (var entry in immutableEntries)
+        {
+            throw new InvalidOperationException($"{entry.Entity.GetType().Name} is append-only and cannot be updated or deleted.");
         }
     }
 }

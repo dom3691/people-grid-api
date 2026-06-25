@@ -198,6 +198,7 @@ public sealed class Branch : SoftDeleteEntity
     public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
+    public ICollection<PublicHoliday> PublicHolidays { get; set; } = new List<PublicHoliday>();
 }
 
 public sealed class JobTitle : SoftDeleteEntity
@@ -228,6 +229,55 @@ public sealed class EmploymentType : SoftDeleteEntity
     public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
+}
+
+public sealed class CompanyProfile : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string? RegistrationNumber { get; set; }
+    public string? LogoPath { get; set; }
+    public string? Address { get; set; }
+    public string? ContactEmail { get; set; }
+    public string? Phone { get; set; }
+}
+
+public sealed class ApprovalLevel : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public int SequenceOrder { get; set; }
+    public string? Description { get; set; }
+    public string Status { get; set; } = "Active";
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class LeaveType : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public decimal DefaultDays { get; set; }
+    public bool RequiresApproval { get; set; } = true;
+    public string Status { get; set; } = "Active";
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class PublicHoliday : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public DateOnly HolidayDate { get; set; }
+    public Guid? BranchId { get; set; }
+    public Branch? Branch { get; set; }
+    public string? LocationScope { get; set; }
+    public string Status { get; set; } = "Active";
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class SystemParameter : SoftDeleteEntity
+{
+    public string Key { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
+    public string DataType { get; set; } = "String";
+    public string? Description { get; set; }
+    public bool IsSensitive { get; set; }
 }
 
 public sealed class Employee : SoftDeleteEntity
@@ -333,12 +383,24 @@ public sealed class AuditLog : BaseEntity
     public string Action { get; set; } = string.Empty;
     public string EntityType { get; set; } = string.Empty;
     public string? EntityId { get; set; }
-    public string? OldValuesJson { get; set; }
-    public string? NewValuesJson { get; set; }
     public string Outcome { get; set; } = "Success";
+    public string Severity { get; set; } = "Information";
     public string? IpAddress { get; set; }
     public string? UserAgent { get; set; }
     public string? CorrelationId { get; set; }
+    public DateTime? RetentionUntil { get; set; }
+    public DateTime? ArchivedAt { get; set; }
+    public int PartitionKey { get; set; }
+    public AuditLogDetail? Detail { get; set; }
+}
+
+public sealed class AuditLogDetail
+{
+    public Guid AuditLogId { get; set; }
+    public AuditLog? AuditLog { get; set; }
+    public string? OldValuesJson { get; set; }
+    public string? NewValuesJson { get; set; }
+    public string? ChangedFieldsJson { get; set; }
 }
 
 public sealed class SystemSetting : SoftDeleteEntity
