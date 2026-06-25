@@ -257,16 +257,24 @@ public sealed class LeaveType : SoftDeleteEntity
     public string Name { get; set; } = string.Empty;
     public decimal DefaultDays { get; set; }
     public bool RequiresApproval { get; set; } = true;
+    public bool PaidFlag { get; set; } = true;
+    public bool RequiresAttachment { get; set; }
+    public bool ExcludesWeekends { get; set; } = true;
+    public bool ExcludesPublicHolidays { get; set; } = true;
     public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
+    public ICollection<LeaveEntitlement> Entitlements { get; set; } = new List<LeaveEntitlement>();
+    public ICollection<LeaveBalance> Balances { get; set; } = new List<LeaveBalance>();
 }
 
 public sealed class PublicHoliday : SoftDeleteEntity
 {
     public string Name { get; set; } = string.Empty;
     public DateOnly HolidayDate { get; set; }
+    public int Year { get; set; }
     public Guid? BranchId { get; set; }
     public Branch? Branch { get; set; }
+    public string? Country { get; set; }
     public string? LocationScope { get; set; }
     public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
@@ -485,10 +493,56 @@ public sealed class DocumentStorageReference : SoftDeleteEntity
 public sealed class HRRequest : SoftDeleteEntity
 {
     public string RequestNumber { get; set; } = string.Empty;
+    public Guid? RequestTypeId { get; set; }
+    public HRRequestType? RequestTypeDefinition { get; set; }
     public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
     public string RequestType { get; set; } = string.Empty;
+    public string Subject { get; set; } = string.Empty;
     public string Status { get; set; } = "Draft";
+    public string Priority { get; set; } = "Normal";
     public string? Description { get; set; }
+    public string? RequestDataJson { get; set; }
+    public DateTime? SubmittedAt { get; set; }
+    public DateTime? CompletedAt { get; set; }
+    public ICollection<HRRequestAttachment> Attachments { get; set; } = new List<HRRequestAttachment>();
+    public ICollection<HRRequestStatusHistory> StatusHistory { get; set; } = new List<HRRequestStatusHistory>();
+    public ApprovalInstance? ApprovalInstance { get; set; }
+}
+
+public sealed class HRRequestType : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public bool RequiresApproval { get; set; } = true;
+    public string? RequiredFieldsJson { get; set; }
+    public bool IsActive { get; set; } = true;
+    public ICollection<HRRequest> Requests { get; set; } = new List<HRRequest>();
+    public ICollection<ApprovalFlow> ApprovalFlows { get; set; } = new List<ApprovalFlow>();
+}
+
+public sealed class HRRequestAttachment : SoftDeleteEntity
+{
+    public Guid RequestId { get; set; }
+    public HRRequest? Request { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public string ContentType { get; set; } = string.Empty;
+    public Guid? UploadedBy { get; set; }
+    public User? UploadedByUser { get; set; }
+}
+
+public sealed class HRRequestStatusHistory : BaseEntity
+{
+    public Guid RequestId { get; set; }
+    public HRRequest? Request { get; set; }
+    public string OldStatus { get; set; } = string.Empty;
+    public string NewStatus { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public Guid? ChangedBy { get; set; }
+    public User? ChangedByUser { get; set; }
+    public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class ApprovalFlow : SoftDeleteEntity
@@ -496,8 +550,14 @@ public sealed class ApprovalFlow : SoftDeleteEntity
     public string Name { get; set; } = string.Empty;
     public string Module { get; set; } = string.Empty;
     public string RequestType { get; set; } = string.Empty;
+    public Guid? RequestTypeId { get; set; }
+    public HRRequestType? RequestTypeDefinition { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Department? Department { get; set; }
     public bool IsActive { get; set; } = true;
     public ICollection<ApprovalStep> Steps { get; set; } = new List<ApprovalStep>();
+    public ICollection<ApprovalRule> Rules { get; set; } = new List<ApprovalRule>();
+    public ICollection<ApprovalInstance> Instances { get; set; } = new List<ApprovalInstance>();
 }
 
 public sealed class ApprovalStep : SoftDeleteEntity
@@ -507,7 +567,11 @@ public sealed class ApprovalStep : SoftDeleteEntity
     public int Sequence { get; set; }
     public string ApproverType { get; set; } = "Role";
     public Guid? ApproverRoleId { get; set; }
+    public Role? ApproverRole { get; set; }
     public Guid? ApproverUserId { get; set; }
+    public User? ApproverUser { get; set; }
+    public int? SlaHours { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 public sealed class ApprovalRequest : SoftDeleteEntity
@@ -519,34 +583,303 @@ public sealed class ApprovalRequest : SoftDeleteEntity
     public Guid? CurrentApproverId { get; set; }
 }
 
+public sealed class ApprovalRule : SoftDeleteEntity
+{
+    public Guid ApprovalFlowId { get; set; }
+    public ApprovalFlow? ApprovalFlow { get; set; }
+    public Guid? RequestTypeId { get; set; }
+    public HRRequestType? RequestType { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+    public Guid? RoleId { get; set; }
+    public Role? Role { get; set; }
+    public int Priority { get; set; } = 100;
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class ApprovalInstance : SoftDeleteEntity
+{
+    public Guid RequestId { get; set; }
+    public HRRequest? Request { get; set; }
+    public Guid ApprovalFlowId { get; set; }
+    public ApprovalFlow? ApprovalFlow { get; set; }
+    public string Status { get; set; } = "Pending";
+    public Guid? CurrentStepId { get; set; }
+    public ApprovalStep? CurrentStep { get; set; }
+    public DateTime StartedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CompletedAt { get; set; }
+    public ICollection<ApprovalInstanceStep> Steps { get; set; } = new List<ApprovalInstanceStep>();
+    public ICollection<ApprovalAction> Actions { get; set; } = new List<ApprovalAction>();
+}
+
+public sealed class ApprovalInstanceStep : SoftDeleteEntity
+{
+    public Guid InstanceId { get; set; }
+    public ApprovalInstance? Instance { get; set; }
+    public Guid StepId { get; set; }
+    public ApprovalStep? Step { get; set; }
+    public Guid? AssignedUserId { get; set; }
+    public User? AssignedUser { get; set; }
+    public string Status { get; set; } = "Pending";
+    public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CompletedAt { get; set; }
+    public ICollection<ApprovalEscalation> Escalations { get; set; } = new List<ApprovalEscalation>();
+}
+
+public sealed class ApprovalAction : BaseEntity
+{
+    public Guid ApprovalInstanceId { get; set; }
+    public ApprovalInstance? ApprovalInstance { get; set; }
+    public Guid StepId { get; set; }
+    public ApprovalStep? Step { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ApprovalEscalation : SoftDeleteEntity
+{
+    public Guid ApprovalInstanceStepId { get; set; }
+    public ApprovalInstanceStep? ApprovalInstanceStep { get; set; }
+    public Guid EscalatedToUserId { get; set; }
+    public User? EscalatedToUser { get; set; }
+    public DateTime EscalatedAt { get; set; } = DateTime.UtcNow;
+    public string Reason { get; set; } = string.Empty;
+}
+
 public sealed class LeaveRequest : SoftDeleteEntity
 {
     public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid? LeaveTypeId { get; set; }
+    public LeaveType? LeaveTypeDefinition { get; set; }
     public string LeaveType { get; set; } = string.Empty;
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
     public decimal Days { get; set; }
+    public string? Reason { get; set; }
     public string Status { get; set; } = "Draft";
+    public Guid? CurrentApproverId { get; set; }
+    public User? CurrentApprover { get; set; }
+    public ICollection<LeaveRequestDate> RequestDates { get; set; } = new List<LeaveRequestDate>();
+    public ICollection<LeaveApprovalAction> ApprovalActions { get; set; } = new List<LeaveApprovalAction>();
+}
+
+public sealed class LeaveEntitlement : SoftDeleteEntity
+{
+    public Guid LeaveTypeId { get; set; }
+    public LeaveType? LeaveType { get; set; }
+    public string? PolicyGroup { get; set; }
+    public Guid? EmploymentTypeId { get; set; }
+    public EmploymentType? EmploymentType { get; set; }
+    public Guid? GradeLevelId { get; set; }
+    public GradeLevel? GradeLevel { get; set; }
+    public decimal EntitlementDays { get; set; }
+    public string? AccrualRule { get; set; }
+    public int Year { get; set; }
+}
+
+public sealed class LeaveBalance : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid LeaveTypeId { get; set; }
+    public LeaveType? LeaveType { get; set; }
+    public int Year { get; set; }
+    public decimal OpeningBalance { get; set; }
+    public decimal Accrued { get; set; }
+    public decimal Used { get; set; }
+    public decimal Adjusted { get; set; }
+    public decimal Remaining { get; set; }
+}
+
+public sealed class LeaveRequestDate : SoftDeleteEntity
+{
+    public Guid LeaveRequestId { get; set; }
+    public LeaveRequest? LeaveRequest { get; set; }
+    public DateOnly Date { get; set; }
+    public bool IsHalfDay { get; set; }
+    public bool Excluded { get; set; }
+    public string? ExclusionReason { get; set; }
+}
+
+public sealed class LeaveApprovalAction : BaseEntity
+{
+    public Guid LeaveRequestId { get; set; }
+    public LeaveRequest? LeaveRequest { get; set; }
+    public int Step { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class LeaveBalanceAdjustment : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid LeaveTypeId { get; set; }
+    public LeaveType? LeaveType { get; set; }
+    public int Year { get; set; }
+    public decimal AdjustmentDays { get; set; }
+    public string Reason { get; set; } = string.Empty;
+    public Guid AdjustedBy { get; set; }
+    public User? AdjustedByUser { get; set; }
+    public DateTime AdjustedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class WorkCalendar : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string WeekendDays { get; set; } = "Saturday,Sunday";
+    public Guid? ApplicableBranchId { get; set; }
+    public Branch? ApplicableBranch { get; set; }
+    public Guid? ApplicableDepartmentId { get; set; }
+    public Department? ApplicableDepartment { get; set; }
+    public bool IsActive { get; set; } = true;
 }
 
 public sealed class AttendanceRecord : SoftDeleteEntity
 {
     public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
     public DateOnly AttendanceDate { get; set; }
     public DateTime? ClockInAt { get; set; }
     public DateTime? ClockOutAt { get; set; }
     public string Status { get; set; } = "Present";
+    public int LateMinutes { get; set; }
+    public int OvertimeMinutes { get; set; }
+    public string Source { get; set; } = "Manual";
+}
+
+public sealed class AttendanceEvent : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateTime EventTime { get; set; }
+    public string EventType { get; set; } = string.Empty;
+    public string Source { get; set; } = string.Empty;
+    public string? DeviceId { get; set; }
+    public string? AccessSystemRef { get; set; }
+    public decimal? GpsLatitude { get; set; }
+    public decimal? GpsLongitude { get; set; }
+}
+
+public sealed class AttendanceCorrectionRequest : SoftDeleteEntity
+{
+    public Guid AttendanceRecordId { get; set; }
+    public AttendanceRecord? AttendanceRecord { get; set; }
+    public DateTime? RequestedClockIn { get; set; }
+    public DateTime? RequestedClockOut { get; set; }
+    public string Reason { get; set; } = string.Empty;
+    public string Status { get; set; } = "Pending";
+}
+
+public sealed class AttendanceApprovalAction : BaseEntity
+{
+    public Guid CorrectionRequestId { get; set; }
+    public AttendanceCorrectionRequest? CorrectionRequest { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class WorkSchedule : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public int GraceMinutes { get; set; }
+    public int OvertimeThresholdMinutes { get; set; }
+    public Guid? ApplicableDepartmentId { get; set; }
+    public Department? ApplicableDepartment { get; set; }
+    public Guid? ApplicableBranchId { get; set; }
+    public Branch? ApplicableBranch { get; set; }
+}
+
+public sealed class Shift : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public int BreakMinutes { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class AttendanceSource : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = "Manual";
+}
+
+public sealed class OvertimeRecord : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly Date { get; set; }
+    public int OvertimeMinutes { get; set; }
+    public string ApprovalStatus { get; set; } = "Pending";
+    public Guid? ApprovedBy { get; set; }
+    public User? ApprovedByUser { get; set; }
+}
+
+public sealed class AbsenceRecord : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly Date { get; set; }
+    public string AbsenceType { get; set; } = string.Empty;
+    public string? Reason { get; set; }
+    public bool IsExcused { get; set; }
 }
 
 public sealed class Notification : SoftDeleteEntity
 {
     public Guid RecipientUserId { get; set; }
+    public User? RecipientUser { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Message { get; set; } = string.Empty;
     public string Type { get; set; } = "Info";
     public bool IsRead { get; set; }
     public string? RelatedEntityType { get; set; }
     public Guid? RelatedEntityId { get; set; }
+    public ICollection<NotificationDeliveryLog> DeliveryLogs { get; set; } = new List<NotificationDeliveryLog>();
+}
+
+public sealed class NotificationTemplate : SoftDeleteEntity
+{
+    public string TemplateKey { get; set; } = string.Empty;
+    public string Channel { get; set; } = "InApp";
+    public string? Subject { get; set; }
+    public string Body { get; set; } = string.Empty;
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class NotificationDeliveryLog : BaseEntity
+{
+    public Guid NotificationId { get; set; }
+    public Notification? Notification { get; set; }
+    public string Channel { get; set; } = string.Empty;
+    public string RecipientAddress { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string? ProviderMessageId { get; set; }
+    public string? ErrorMessage { get; set; }
+    public DateTime AttemptedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class NotificationPreference : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string NotificationType { get; set; } = string.Empty;
+    public string Channel { get; set; } = "InApp";
+    public bool Enabled { get; set; } = true;
 }
 
 public sealed class AuditLog : BaseEntity

@@ -46,12 +46,37 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<DocumentVerificationHistory> DocumentVerificationHistories { get; set; }
     public DbSet<DocumentStorageReference> DocumentStorageReferences { get; set; }
     public DbSet<HRRequest> HRRequests { get; set; }
+    public DbSet<HRRequestType> HRRequestTypes { get; set; }
+    public DbSet<HRRequestAttachment> HRRequestAttachments { get; set; }
+    public DbSet<HRRequestStatusHistory> HRRequestStatusHistories { get; set; }
     public DbSet<ApprovalFlow> ApprovalFlows { get; set; }
     public DbSet<ApprovalStep> ApprovalSteps { get; set; }
     public DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+    public DbSet<ApprovalRule> ApprovalRules { get; set; }
+    public DbSet<ApprovalInstance> ApprovalInstances { get; set; }
+    public DbSet<ApprovalInstanceStep> ApprovalInstanceSteps { get; set; }
+    public DbSet<ApprovalAction> ApprovalActions { get; set; }
+    public DbSet<ApprovalEscalation> ApprovalEscalations { get; set; }
     public DbSet<LeaveRequest> LeaveRequests { get; set; }
+    public DbSet<LeaveEntitlement> LeaveEntitlements { get; set; }
+    public DbSet<LeaveBalance> LeaveBalances { get; set; }
+    public DbSet<LeaveRequestDate> LeaveRequestDates { get; set; }
+    public DbSet<LeaveApprovalAction> LeaveApprovalActions { get; set; }
+    public DbSet<LeaveBalanceAdjustment> LeaveBalanceAdjustments { get; set; }
+    public DbSet<WorkCalendar> WorkCalendars { get; set; }
     public DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+    public DbSet<AttendanceEvent> AttendanceEvents { get; set; }
+    public DbSet<AttendanceCorrectionRequest> AttendanceCorrectionRequests { get; set; }
+    public DbSet<AttendanceApprovalAction> AttendanceApprovalActions { get; set; }
+    public DbSet<WorkSchedule> WorkSchedules { get; set; }
+    public DbSet<Shift> Shifts { get; set; }
+    public DbSet<AttendanceSource> AttendanceSources { get; set; }
+    public DbSet<OvertimeRecord> OvertimeRecords { get; set; }
+    public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
+    public DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
+    public DbSet<NotificationPreference> NotificationPreferences { get; set; }
     public DbSet<AuditLog> AuditLogs { get; set; }
     public DbSet<AuditLogDetail> AuditLogDetails { get; set; }
     public DbSet<SystemSetting> SystemSettings { get; set; }
@@ -355,6 +380,165 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<DocumentStorageReference>().Property(x => x.ContainerName).HasMaxLength(150);
         modelBuilder.Entity<DocumentStorageReference>().Property(x => x.BlobKey).HasMaxLength(500);
         modelBuilder.Entity<DocumentStorageReference>().Property(x => x.ContentType).HasMaxLength(150);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.RequestNumber).IsUnique();
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.RequestTypeId);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.Status);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.Priority);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.SubmittedAt);
+        modelBuilder.Entity<HRRequest>().HasIndex(x => x.CompletedAt);
+        modelBuilder.Entity<HRRequest>().Property(x => x.RequestNumber).HasMaxLength(50);
+        modelBuilder.Entity<HRRequest>().Property(x => x.RequestType).HasMaxLength(100);
+        modelBuilder.Entity<HRRequest>().Property(x => x.Subject).HasMaxLength(200);
+        modelBuilder.Entity<HRRequest>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<HRRequest>().Property(x => x.Priority).HasMaxLength(50);
+        modelBuilder.Entity<HRRequest>().Property(x => x.Description).HasMaxLength(2000);
+        modelBuilder.Entity<HRRequest>().Property(x => x.RequestDataJson).HasColumnType("nvarchar(max)");
+
+        modelBuilder.Entity<HRRequestType>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<HRRequestType>().HasIndex(x => x.IsActive);
+        modelBuilder.Entity<HRRequestType>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<HRRequestType>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<HRRequestType>().Property(x => x.RequiredFieldsJson).HasColumnType("nvarchar(max)");
+
+        modelBuilder.Entity<HRRequestAttachment>().HasIndex(x => x.RequestId);
+        modelBuilder.Entity<HRRequestAttachment>().HasIndex(x => x.UploadedBy);
+        modelBuilder.Entity<HRRequestAttachment>().Property(x => x.FileName).HasMaxLength(255);
+        modelBuilder.Entity<HRRequestAttachment>().Property(x => x.StorageKey).HasMaxLength(500);
+        modelBuilder.Entity<HRRequestAttachment>().Property(x => x.ContentType).HasMaxLength(150);
+
+        modelBuilder.Entity<HRRequestStatusHistory>().HasIndex(x => x.RequestId);
+        modelBuilder.Entity<HRRequestStatusHistory>().HasIndex(x => x.ChangedBy);
+        modelBuilder.Entity<HRRequestStatusHistory>().HasIndex(x => x.ChangedAt);
+        modelBuilder.Entity<HRRequestStatusHistory>().HasIndex(x => x.NewStatus);
+        modelBuilder.Entity<HRRequestStatusHistory>().Property(x => x.OldStatus).HasMaxLength(50);
+        modelBuilder.Entity<HRRequestStatusHistory>().Property(x => x.NewStatus).HasMaxLength(50);
+        modelBuilder.Entity<HRRequestStatusHistory>().Property(x => x.Comments).HasMaxLength(1000);
+
+        modelBuilder.Entity<ApprovalFlow>().HasIndex(x => x.RequestTypeId);
+        modelBuilder.Entity<ApprovalFlow>().HasIndex(x => x.DepartmentId);
+        modelBuilder.Entity<ApprovalFlow>().HasIndex(x => x.IsActive);
+        modelBuilder.Entity<ApprovalFlow>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<ApprovalFlow>().Property(x => x.Module).HasMaxLength(100);
+        modelBuilder.Entity<ApprovalFlow>().Property(x => x.RequestType).HasMaxLength(100);
+
+        modelBuilder.Entity<ApprovalStep>().HasIndex(x => x.ApprovalFlowId);
+        modelBuilder.Entity<ApprovalStep>().HasIndex(x => x.ApproverRoleId);
+        modelBuilder.Entity<ApprovalStep>().HasIndex(x => x.ApproverUserId);
+        modelBuilder.Entity<ApprovalStep>().HasIndex(x => new { x.ApprovalFlowId, x.Sequence }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ApprovalStep>().Property(x => x.ApproverType).HasMaxLength(50);
+
+        modelBuilder.Entity<ApprovalRule>().HasIndex(x => x.ApprovalFlowId);
+        modelBuilder.Entity<ApprovalRule>().HasIndex(x => x.RequestTypeId);
+        modelBuilder.Entity<ApprovalRule>().HasIndex(x => x.DepartmentId);
+        modelBuilder.Entity<ApprovalRule>().HasIndex(x => x.RoleId);
+        modelBuilder.Entity<ApprovalRule>().HasIndex(x => x.IsActive);
+
+        modelBuilder.Entity<ApprovalInstance>().HasIndex(x => x.RequestId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ApprovalInstance>().HasIndex(x => x.ApprovalFlowId);
+        modelBuilder.Entity<ApprovalInstance>().HasIndex(x => x.CurrentStepId);
+        modelBuilder.Entity<ApprovalInstance>().HasIndex(x => x.Status);
+        modelBuilder.Entity<ApprovalInstance>().Property(x => x.Status).HasMaxLength(50);
+
+        modelBuilder.Entity<ApprovalInstanceStep>().HasIndex(x => x.InstanceId);
+        modelBuilder.Entity<ApprovalInstanceStep>().HasIndex(x => x.StepId);
+        modelBuilder.Entity<ApprovalInstanceStep>().HasIndex(x => x.AssignedUserId);
+        modelBuilder.Entity<ApprovalInstanceStep>().HasIndex(x => x.Status);
+        modelBuilder.Entity<ApprovalInstanceStep>().HasIndex(x => new { x.InstanceId, x.StepId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ApprovalInstanceStep>().Property(x => x.Status).HasMaxLength(50);
+
+        modelBuilder.Entity<ApprovalAction>().HasIndex(x => x.ApprovalInstanceId);
+        modelBuilder.Entity<ApprovalAction>().HasIndex(x => x.StepId);
+        modelBuilder.Entity<ApprovalAction>().HasIndex(x => x.ActorUserId);
+        modelBuilder.Entity<ApprovalAction>().HasIndex(x => x.DecidedAt);
+        modelBuilder.Entity<ApprovalAction>().Property(x => x.Decision).HasMaxLength(50);
+        modelBuilder.Entity<ApprovalAction>().Property(x => x.Comments).HasMaxLength(1000);
+
+        modelBuilder.Entity<ApprovalEscalation>().HasIndex(x => x.ApprovalInstanceStepId);
+        modelBuilder.Entity<ApprovalEscalation>().HasIndex(x => x.EscalatedToUserId);
+        modelBuilder.Entity<ApprovalEscalation>().HasIndex(x => x.EscalatedAt);
+        modelBuilder.Entity<ApprovalEscalation>().Property(x => x.Reason).HasMaxLength(1000);
+        modelBuilder.Entity<Notification>().HasIndex(x => x.RecipientUserId);
+        modelBuilder.Entity<Notification>().HasIndex(x => x.IsRead);
+        modelBuilder.Entity<Notification>().HasIndex(x => new { x.RecipientUserId, x.IsRead, x.CreatedAt });
+        modelBuilder.Entity<Notification>().HasIndex(x => new { x.RelatedEntityType, x.RelatedEntityId });
+        modelBuilder.Entity<Notification>().Property(x => x.Type).HasMaxLength(100);
+        modelBuilder.Entity<Notification>().Property(x => x.Title).HasMaxLength(200);
+        modelBuilder.Entity<Notification>().Property(x => x.Message).HasMaxLength(2000);
+        modelBuilder.Entity<Notification>().Property(x => x.RelatedEntityType).HasMaxLength(100);
+        modelBuilder.Entity<NotificationTemplate>().HasIndex(x => new { x.TemplateKey, x.Channel }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<NotificationTemplate>().Property(x => x.TemplateKey).HasMaxLength(150);
+        modelBuilder.Entity<NotificationTemplate>().Property(x => x.Channel).HasMaxLength(50);
+        modelBuilder.Entity<NotificationTemplate>().Property(x => x.Subject).HasMaxLength(200);
+        modelBuilder.Entity<NotificationTemplate>().Property(x => x.Body).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<NotificationDeliveryLog>().HasIndex(x => x.NotificationId);
+        modelBuilder.Entity<NotificationDeliveryLog>().HasIndex(x => x.AttemptedAt);
+        modelBuilder.Entity<NotificationDeliveryLog>().HasIndex(x => x.Status);
+        modelBuilder.Entity<NotificationDeliveryLog>().Property(x => x.Channel).HasMaxLength(50);
+        modelBuilder.Entity<NotificationDeliveryLog>().Property(x => x.RecipientAddress).HasMaxLength(256);
+        modelBuilder.Entity<NotificationDeliveryLog>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<NotificationDeliveryLog>().Property(x => x.ProviderMessageId).HasMaxLength(200);
+        modelBuilder.Entity<NotificationDeliveryLog>().Property(x => x.ErrorMessage).HasMaxLength(2000);
+        modelBuilder.Entity<NotificationPreference>().HasIndex(x => new { x.UserId, x.NotificationType, x.Channel }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<NotificationPreference>().Property(x => x.NotificationType).HasMaxLength(100);
+        modelBuilder.Entity<NotificationPreference>().Property(x => x.Channel).HasMaxLength(50);
+
+        modelBuilder.Entity<LeaveType>().HasMany(x => x.Entitlements).WithOne(x => x.LeaveType).HasForeignKey(x => x.LeaveTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveEntitlement>().HasIndex(x => new { x.LeaveTypeId, x.PolicyGroup, x.EmploymentTypeId, x.GradeLevelId, x.Year });
+        modelBuilder.Entity<LeaveEntitlement>().Property(x => x.PolicyGroup).HasMaxLength(100);
+        modelBuilder.Entity<LeaveEntitlement>().Property(x => x.AccrualRule).HasMaxLength(100);
+        modelBuilder.Entity<LeaveBalance>().HasIndex(x => new { x.EmployeeId, x.LeaveTypeId, x.Year }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<LeaveRequest>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<LeaveRequest>().HasIndex(x => x.LeaveTypeId);
+        modelBuilder.Entity<LeaveRequest>().HasIndex(x => x.Status);
+        modelBuilder.Entity<LeaveRequest>().HasIndex(x => new { x.EmployeeId, x.StartDate, x.EndDate });
+        modelBuilder.Entity<LeaveRequest>().Property(x => x.LeaveType).HasMaxLength(100);
+        modelBuilder.Entity<LeaveRequest>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<LeaveRequest>().Property(x => x.Reason).HasMaxLength(1000);
+        modelBuilder.Entity<LeaveRequest>().ToTable(t => t.HasCheckConstraint("CK_LeaveRequests_Start_End", "[StartDate] <= [EndDate]"));
+        modelBuilder.Entity<LeaveRequestDate>().HasIndex(x => new { x.LeaveRequestId, x.Date }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<LeaveRequestDate>().HasIndex(x => x.Date);
+        modelBuilder.Entity<LeaveRequestDate>().Property(x => x.ExclusionReason).HasMaxLength(100);
+        modelBuilder.Entity<LeaveApprovalAction>().HasIndex(x => x.LeaveRequestId);
+        modelBuilder.Entity<LeaveApprovalAction>().HasIndex(x => x.ActorUserId);
+        modelBuilder.Entity<LeaveApprovalAction>().Property(x => x.Decision).HasMaxLength(50);
+        modelBuilder.Entity<LeaveApprovalAction>().Property(x => x.Comments).HasMaxLength(1000);
+        modelBuilder.Entity<LeaveBalanceAdjustment>().HasIndex(x => new { x.EmployeeId, x.LeaveTypeId, x.Year });
+        modelBuilder.Entity<LeaveBalanceAdjustment>().Property(x => x.Reason).HasMaxLength(1000);
+        modelBuilder.Entity<WorkCalendar>().HasIndex(x => x.IsActive);
+        modelBuilder.Entity<WorkCalendar>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<WorkCalendar>().Property(x => x.WeekendDays).HasMaxLength(100);
+        modelBuilder.Entity<PublicHoliday>().HasIndex(x => x.Year);
+        modelBuilder.Entity<PublicHoliday>().Property(x => x.Country).HasMaxLength(100);
+
+        modelBuilder.Entity<AttendanceRecord>().HasIndex(x => new { x.EmployeeId, x.AttendanceDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<AttendanceRecord>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceRecord>().Property(x => x.Source).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceRecord>().ToTable(t => t.HasCheckConstraint("CK_AttendanceRecords_ClockIn_ClockOut", "[ClockOutAt] IS NULL OR [ClockInAt] IS NULL OR [ClockInAt] <= [ClockOutAt]"));
+        modelBuilder.Entity<AttendanceEvent>().HasIndex(x => new { x.EmployeeId, x.EventTime });
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.EventType).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.Source).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.DeviceId).HasMaxLength(100);
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.AccessSystemRef).HasMaxLength(150);
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.GpsLatitude).HasPrecision(9, 6);
+        modelBuilder.Entity<AttendanceEvent>().Property(x => x.GpsLongitude).HasPrecision(9, 6);
+        modelBuilder.Entity<AttendanceCorrectionRequest>().HasIndex(x => x.AttendanceRecordId);
+        modelBuilder.Entity<AttendanceCorrectionRequest>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceCorrectionRequest>().Property(x => x.Reason).HasMaxLength(1000);
+        modelBuilder.Entity<AttendanceApprovalAction>().HasIndex(x => x.CorrectionRequestId);
+        modelBuilder.Entity<AttendanceApprovalAction>().Property(x => x.Decision).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceApprovalAction>().Property(x => x.Comments).HasMaxLength(1000);
+        modelBuilder.Entity<WorkSchedule>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<Shift>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<AttendanceSource>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<AttendanceSource>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<AttendanceSource>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<AttendanceSource>().Property(x => x.Type).HasMaxLength(50);
+        modelBuilder.Entity<OvertimeRecord>().HasIndex(x => new { x.EmployeeId, x.Date });
+        modelBuilder.Entity<OvertimeRecord>().Property(x => x.ApprovalStatus).HasMaxLength(50);
+        modelBuilder.Entity<AbsenceRecord>().HasIndex(x => new { x.EmployeeId, x.Date });
+        modelBuilder.Entity<AbsenceRecord>().Property(x => x.AbsenceType).HasMaxLength(50);
+        modelBuilder.Entity<AbsenceRecord>().Property(x => x.Reason).HasMaxLength(1000);
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         modelBuilder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
         modelBuilder.Entity<UserRole>().Property(x => x.AssignedBy).HasMaxLength(100);
@@ -665,6 +849,191 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             .HasForeignKey<DocumentStorageReference>(x => x.DocumentId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<HRRequest>()
+            .HasOne(x => x.Employee)
+            .WithMany()
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<HRRequest>()
+            .HasOne(x => x.RequestTypeDefinition)
+            .WithMany(x => x.Requests)
+            .HasForeignKey(x => x.RequestTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<HRRequestAttachment>()
+            .HasOne(x => x.Request)
+            .WithMany(x => x.Attachments)
+            .HasForeignKey(x => x.RequestId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<HRRequestAttachment>()
+            .HasOne(x => x.UploadedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.UploadedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<HRRequestStatusHistory>()
+            .HasOne(x => x.Request)
+            .WithMany(x => x.StatusHistory)
+            .HasForeignKey(x => x.RequestId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<HRRequestStatusHistory>()
+            .HasOne(x => x.ChangedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.ChangedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalFlow>()
+            .HasOne(x => x.RequestTypeDefinition)
+            .WithMany(x => x.ApprovalFlows)
+            .HasForeignKey(x => x.RequestTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalFlow>()
+            .HasOne(x => x.Department)
+            .WithMany()
+            .HasForeignKey(x => x.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalStep>()
+            .HasOne(x => x.ApprovalFlow)
+            .WithMany(x => x.Steps)
+            .HasForeignKey(x => x.ApprovalFlowId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalStep>()
+            .HasOne(x => x.ApproverRole)
+            .WithMany()
+            .HasForeignKey(x => x.ApproverRoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalStep>()
+            .HasOne(x => x.ApproverUser)
+            .WithMany()
+            .HasForeignKey(x => x.ApproverUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalRule>()
+            .HasOne(x => x.ApprovalFlow)
+            .WithMany(x => x.Rules)
+            .HasForeignKey(x => x.ApprovalFlowId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalRule>()
+            .HasOne(x => x.RequestType)
+            .WithMany()
+            .HasForeignKey(x => x.RequestTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalRule>()
+            .HasOne(x => x.Department)
+            .WithMany()
+            .HasForeignKey(x => x.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalRule>()
+            .HasOne(x => x.Role)
+            .WithMany()
+            .HasForeignKey(x => x.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstance>()
+            .HasOne(x => x.Request)
+            .WithOne(x => x.ApprovalInstance)
+            .HasForeignKey<ApprovalInstance>(x => x.RequestId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstance>()
+            .HasOne(x => x.ApprovalFlow)
+            .WithMany(x => x.Instances)
+            .HasForeignKey(x => x.ApprovalFlowId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstance>()
+            .HasOne(x => x.CurrentStep)
+            .WithMany()
+            .HasForeignKey(x => x.CurrentStepId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstanceStep>()
+            .HasOne(x => x.Instance)
+            .WithMany(x => x.Steps)
+            .HasForeignKey(x => x.InstanceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstanceStep>()
+            .HasOne(x => x.Step)
+            .WithMany()
+            .HasForeignKey(x => x.StepId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalInstanceStep>()
+            .HasOne(x => x.AssignedUser)
+            .WithMany()
+            .HasForeignKey(x => x.AssignedUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalAction>()
+            .HasOne(x => x.ApprovalInstance)
+            .WithMany(x => x.Actions)
+            .HasForeignKey(x => x.ApprovalInstanceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalAction>()
+            .HasOne(x => x.Step)
+            .WithMany()
+            .HasForeignKey(x => x.StepId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalAction>()
+            .HasOne(x => x.ActorUser)
+            .WithMany()
+            .HasForeignKey(x => x.ActorUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalEscalation>()
+            .HasOne(x => x.ApprovalInstanceStep)
+            .WithMany(x => x.Escalations)
+            .HasForeignKey(x => x.ApprovalInstanceStepId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ApprovalEscalation>()
+            .HasOne(x => x.EscalatedToUser)
+            .WithMany()
+            .HasForeignKey(x => x.EscalatedToUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Notification>().HasOne(x => x.RecipientUser).WithMany().HasForeignKey(x => x.RecipientUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<NotificationDeliveryLog>().HasOne(x => x.Notification).WithMany(x => x.DeliveryLogs).HasForeignKey(x => x.NotificationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<NotificationPreference>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveRequest>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveRequest>().HasOne(x => x.LeaveTypeDefinition).WithMany().HasForeignKey(x => x.LeaveTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveRequest>().HasOne(x => x.CurrentApprover).WithMany().HasForeignKey(x => x.CurrentApproverId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveBalance>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveBalance>().HasOne(x => x.LeaveType).WithMany(x => x.Balances).HasForeignKey(x => x.LeaveTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveEntitlement>().HasOne(x => x.EmploymentType).WithMany().HasForeignKey(x => x.EmploymentTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveEntitlement>().HasOne(x => x.GradeLevel).WithMany().HasForeignKey(x => x.GradeLevelId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveRequestDate>().HasOne(x => x.LeaveRequest).WithMany(x => x.RequestDates).HasForeignKey(x => x.LeaveRequestId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveApprovalAction>().HasOne(x => x.LeaveRequest).WithMany(x => x.ApprovalActions).HasForeignKey(x => x.LeaveRequestId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveApprovalAction>().HasOne(x => x.ActorUser).WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveBalanceAdjustment>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveBalanceAdjustment>().HasOne(x => x.LeaveType).WithMany().HasForeignKey(x => x.LeaveTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LeaveBalanceAdjustment>().HasOne(x => x.AdjustedByUser).WithMany().HasForeignKey(x => x.AdjustedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WorkCalendar>().HasOne(x => x.ApplicableBranch).WithMany().HasForeignKey(x => x.ApplicableBranchId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WorkCalendar>().HasOne(x => x.ApplicableDepartment).WithMany().HasForeignKey(x => x.ApplicableDepartmentId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AttendanceRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AttendanceEvent>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AttendanceCorrectionRequest>().HasOne(x => x.AttendanceRecord).WithMany().HasForeignKey(x => x.AttendanceRecordId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AttendanceApprovalAction>().HasOne(x => x.CorrectionRequest).WithMany().HasForeignKey(x => x.CorrectionRequestId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AttendanceApprovalAction>().HasOne(x => x.ActorUser).WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WorkSchedule>().HasOne(x => x.ApplicableDepartment).WithMany().HasForeignKey(x => x.ApplicableDepartmentId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WorkSchedule>().HasOne(x => x.ApplicableBranch).WithMany().HasForeignKey(x => x.ApplicableBranchId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OvertimeRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OvertimeRecord>().HasOne(x => x.ApprovedByUser).WithMany().HasForeignKey(x => x.ApprovedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<AbsenceRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {
             var parameter = Expression.Parameter(entityType.ClrType, "e");
@@ -703,7 +1072,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     private void EnforceAppendOnlyLogs()
     {
         var immutableEntries = ChangeTracker.Entries()
-            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory) &&
+            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory || x.Entity is HRRequestStatusHistory || x.Entity is ApprovalAction || x.Entity is NotificationDeliveryLog || x.Entity is LeaveApprovalAction || x.Entity is AttendanceApprovalAction) &&
                         (x.State == EntityState.Modified || x.State == EntityState.Deleted));
 
         foreach (var entry in immutableEntries)

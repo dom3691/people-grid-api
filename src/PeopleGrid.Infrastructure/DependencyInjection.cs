@@ -3,8 +3,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PeopleGrid.Application.Abstractions;
 using PeopleGrid.Application.Features.AuditLogs.Interfaces;
+using PeopleGrid.Application.Features.Approvals.Interfaces;
 using PeopleGrid.Application.Features.EmployeeDocuments.Interfaces;
 using PeopleGrid.Application.Features.Employees.Interfaces;
+using PeopleGrid.Application.Features.HRRequests.Interfaces;
+using PeopleGrid.Application.Features.Leave.Interfaces;
+using PeopleGrid.Application.Features.Notifications.Interfaces;
 using PeopleGrid.Application.Features.Organization.Interfaces;
 using PeopleGrid.Application.Features.Roles.Interfaces;
 using PeopleGrid.Application.Features.Settings.Interfaces;
@@ -57,6 +61,10 @@ public static class DependencyInjection
         services.AddScoped<IAuditLogService, AuditLogService>();
         services.AddScoped<IEmployeeService, EmployeeService>();
         services.AddScoped<IEmployeeDocumentService, EmployeeDocumentService>();
+        services.AddScoped<IHRRequestService, HRRequestService>();
+        services.AddScoped<IApprovalWorkflowService, ApprovalWorkflowService>();
+        services.AddScoped<INotificationService, NotificationService>();
+        services.AddScoped<ILeaveService, LeaveService>();
         services.AddScoped<RolePermissionSeeder>();
 
         return services;

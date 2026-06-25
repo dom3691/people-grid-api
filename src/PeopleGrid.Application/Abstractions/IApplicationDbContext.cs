@@ -43,12 +43,37 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<DocumentVerificationHistory> DocumentVerificationHistories { get; set; }
     DbSet<DocumentStorageReference> DocumentStorageReferences { get; set; }
     DbSet<HRRequest> HRRequests { get; set; }
+    DbSet<HRRequestType> HRRequestTypes { get; set; }
+    DbSet<HRRequestAttachment> HRRequestAttachments { get; set; }
+    DbSet<HRRequestStatusHistory> HRRequestStatusHistories { get; set; }
     DbSet<ApprovalFlow> ApprovalFlows { get; set; }
     DbSet<ApprovalStep> ApprovalSteps { get; set; }
     DbSet<ApprovalRequest> ApprovalRequests { get; set; }
+    DbSet<ApprovalRule> ApprovalRules { get; set; }
+    DbSet<ApprovalInstance> ApprovalInstances { get; set; }
+    DbSet<ApprovalInstanceStep> ApprovalInstanceSteps { get; set; }
+    DbSet<ApprovalAction> ApprovalActions { get; set; }
+    DbSet<ApprovalEscalation> ApprovalEscalations { get; set; }
     DbSet<LeaveRequest> LeaveRequests { get; set; }
+    DbSet<LeaveEntitlement> LeaveEntitlements { get; set; }
+    DbSet<LeaveBalance> LeaveBalances { get; set; }
+    DbSet<LeaveRequestDate> LeaveRequestDates { get; set; }
+    DbSet<LeaveApprovalAction> LeaveApprovalActions { get; set; }
+    DbSet<LeaveBalanceAdjustment> LeaveBalanceAdjustments { get; set; }
+    DbSet<WorkCalendar> WorkCalendars { get; set; }
     DbSet<AttendanceRecord> AttendanceRecords { get; set; }
+    DbSet<AttendanceEvent> AttendanceEvents { get; set; }
+    DbSet<AttendanceCorrectionRequest> AttendanceCorrectionRequests { get; set; }
+    DbSet<AttendanceApprovalAction> AttendanceApprovalActions { get; set; }
+    DbSet<WorkSchedule> WorkSchedules { get; set; }
+    DbSet<Shift> Shifts { get; set; }
+    DbSet<AttendanceSource> AttendanceSources { get; set; }
+    DbSet<OvertimeRecord> OvertimeRecords { get; set; }
+    DbSet<AbsenceRecord> AbsenceRecords { get; set; }
     DbSet<Notification> Notifications { get; set; }
+    DbSet<NotificationTemplate> NotificationTemplates { get; set; }
+    DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
+    DbSet<NotificationPreference> NotificationPreferences { get; set; }
     DbSet<AuditLog> AuditLogs { get; set; }
     DbSet<AuditLogDetail> AuditLogDetails { get; set; }
     DbSet<SystemSetting> SystemSettings { get; set; }

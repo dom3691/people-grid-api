@@ -9,6 +9,14 @@ public static class PermissionConstants
     public const string EmployeeDocumentView = "EmployeeDocument.View";
     public const string EmployeeDocumentManage = "EmployeeDocument.Manage";
     public const string EmployeeDocumentVerify = "EmployeeDocument.Verify";
+    public const string HRRequestView = "HRRequest.View";
+    public const string HRRequestCreate = "HRRequest.Create";
+    public const string HRRequestManage = "HRRequest.Manage";
+    public const string ApprovalApprove = "Approval.Approve";
+    public const string ApprovalManage = "Approval.Manage";
+    public const string NotificationManage = "Notification.Manage";
+    public const string LeaveView = "Leave.View";
+    public const string LeaveManage = "Leave.Manage";
     public const string LeaveApply = "Leave.Apply";
     public const string LeaveApprove = "Leave.Approve";
     public const string PayrollProcess = "Payroll.Process";
@@ -21,10 +29,12 @@ public static class PermissionConstants
     [
         EmployeeView, EmployeeCreate, EmployeeEdit, EmployeeDeactivate,
         EmployeeDocumentView, EmployeeDocumentManage, EmployeeDocumentVerify,
+        HRRequestView, HRRequestCreate, HRRequestManage, ApprovalApprove, ApprovalManage,
+        NotificationManage, LeaveView, LeaveManage,
         LeaveApply, LeaveApprove, PayrollProcess, ReportExport,
         SettingsManage, AuditView, AuditExport,
         "User.View", "User.Create", "User.Edit", "User.Deactivate",
         "Role.Manage", "Permission.Manage", "Department.Manage",
-        "Approval.Manage", "Notification.View", "Tenant.Manage"
+        "Notification.View", "Tenant.Manage"
     ];
 }
