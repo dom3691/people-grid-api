@@ -839,6 +839,813 @@ public sealed class AbsenceRecord : SoftDeleteEntity
     public bool IsExcused { get; set; }
 }
 
+public sealed class OnboardingTemplate : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public bool IsActive { get; set; } = true;
+    public ICollection<OnboardingTemplateItem> Items { get; set; } = new List<OnboardingTemplateItem>();
+}
+
+public sealed class OnboardingTemplateItem : SoftDeleteEntity
+{
+    public Guid TemplateId { get; set; }
+    public OnboardingTemplate? Template { get; set; }
+    public string ChecklistItem { get; set; } = string.Empty;
+    public string OwnerType { get; set; } = "HR";
+    public int DefaultDueDays { get; set; }
+    public bool IsMandatory { get; set; } = true;
+    public int Sequence { get; set; }
+}
+
+public sealed class OnboardingPlan : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid TemplateId { get; set; }
+    public OnboardingTemplate? Template { get; set; }
+    public DateOnly StartDate { get; set; }
+    public string Status { get; set; } = "Open";
+    public DateTime? CompletedAt { get; set; }
+    public ICollection<OnboardingTask> Tasks { get; set; } = new List<OnboardingTask>();
+}
+
+public sealed class OnboardingTask : SoftDeleteEntity
+{
+    public Guid PlanId { get; set; }
+    public OnboardingPlan? Plan { get; set; }
+    public string ChecklistItem { get; set; } = string.Empty;
+    public string OwnerType { get; set; } = "HR";
+    public Guid? OwnerUserId { get; set; }
+    public User? OwnerUser { get; set; }
+    public DateOnly DueDate { get; set; }
+    public string Status { get; set; } = "Open";
+    public DateTime? CompletedAt { get; set; }
+    public Guid? CompletedBy { get; set; }
+    public User? CompletedByUser { get; set; }
+    public bool IsMandatory { get; set; }
+}
+
+public sealed class OnboardingDocument : SoftDeleteEntity
+{
+    public Guid PlanId { get; set; }
+    public OnboardingPlan? Plan { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid? DocumentTypeId { get; set; }
+    public DocumentType? DocumentType { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class PolicyAcknowledgement : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid PolicyId { get; set; }
+    public DateTime AcknowledgedAt { get; set; } = DateTime.UtcNow;
+    public string? IpAddress { get; set; }
+}
+
+public sealed class EmployeeAssetAssignment : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string AssetType { get; set; } = string.Empty;
+    public string AssetTag { get; set; } = string.Empty;
+    public DateOnly AssignedDate { get; set; }
+    public DateOnly? ReturnedDate { get; set; }
+    public string? Condition { get; set; }
+}
+
+public sealed class ProbationRecord : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public Guid? ReviewerUserId { get; set; }
+    public User? ReviewerUser { get; set; }
+    public string Status { get; set; } = "Open";
+    public string? Outcome { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class DisciplinaryCase : SoftDeleteEntity
+{
+    public string CaseNumber { get; set; } = string.Empty;
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly IncidentDate { get; set; }
+    public string Category { get; set; } = string.Empty;
+    public string QueryDetails { get; set; } = string.Empty;
+    public string Status { get; set; } = "Open";
+    public DateOnly ResponseDueDate { get; set; }
+    public Guid IssuedBy { get; set; }
+    public User? IssuedByUser { get; set; }
+    public DateOnly IssueDate { get; set; }
+    public ICollection<DisciplinaryResponse> Responses { get; set; } = new List<DisciplinaryResponse>();
+}
+
+public sealed class DisciplinaryResponse : BaseEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public string ResponseText { get; set; } = string.Empty;
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+    public Guid SubmittedBy { get; set; }
+    public User? SubmittedByUser { get; set; }
+}
+
+public sealed class DisciplinaryReview : BaseEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public string ReviewComments { get; set; } = string.Empty;
+    public Guid ReviewedBy { get; set; }
+    public User? ReviewedByUser { get; set; }
+    public DateTime ReviewedAt { get; set; } = DateTime.UtcNow;
+    public string Outcome { get; set; } = string.Empty;
+}
+
+public sealed class DisciplinaryAction : SoftDeleteEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public string ActionType { get; set; } = string.Empty;
+    public DateOnly EffectiveDate { get; set; }
+    public string Details { get; set; } = string.Empty;
+    public Guid CreatedByUserId { get; set; }
+    public User? CreatedByUser { get; set; }
+}
+
+public sealed class WarningLetter : SoftDeleteEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public string WarningLevel { get; set; } = string.Empty;
+    public string LetterContent { get; set; } = string.Empty;
+    public Guid IssuedBy { get; set; }
+    public User? IssuedByUser { get; set; }
+    public DateTime IssuedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class SuspensionRecord : SoftDeleteEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public string Reason { get; set; } = string.Empty;
+    public Guid ApprovedBy { get; set; }
+    public User? ApprovedByUser { get; set; }
+}
+
+public sealed class DisciplinaryEscalation : SoftDeleteEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public Guid EscalatedTo { get; set; }
+    public User? EscalatedToUser { get; set; }
+    public Guid EscalatedBy { get; set; }
+    public User? EscalatedByUser { get; set; }
+    public string Reason { get; set; } = string.Empty;
+    public DateTime EscalatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class DisciplinaryAttachment : SoftDeleteEntity
+{
+    public Guid CaseId { get; set; }
+    public DisciplinaryCase? Case { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public Guid? UploadedBy { get; set; }
+    public User? UploadedByUser { get; set; }
+    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ExitCase : SoftDeleteEntity
+{
+    public string CaseNumber { get; set; } = string.Empty;
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly ResignationDate { get; set; }
+    public DateOnly LastWorkingDay { get; set; }
+    public string? Reason { get; set; }
+    public int NoticePeriod { get; set; }
+    public string Status { get; set; } = "Draft";
+}
+
+public sealed class ResignationRequest : SoftDeleteEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+    public DateOnly ProposedLastWorkingDay { get; set; }
+    public string? ReasonForLeaving { get; set; }
+}
+
+public sealed class ExitApprovalAction : BaseEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public int Step { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ExitClearanceItem : SoftDeleteEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public string ItemName { get; set; } = string.Empty;
+    public Guid? OwnerUserId { get; set; }
+    public User? OwnerUser { get; set; }
+    public bool IsMandatory { get; set; } = true;
+    public string Status { get; set; } = "Pending";
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class ExitHandoverRecord : SoftDeleteEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public Guid? HandoverToUserId { get; set; }
+    public User? HandoverToUser { get; set; }
+    public string? Notes { get; set; }
+    public DateTime? CompletedAt { get; set; }
+}
+
+public sealed class ExitInterviewResponse : BaseEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public string Question { get; set; } = string.Empty;
+    public string? Response { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ExitAssetReturn : SoftDeleteEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public string AssetType { get; set; } = string.Empty;
+    public string AssetTag { get; set; } = string.Empty;
+    public DateOnly? ReturnedDate { get; set; }
+    public string? Condition { get; set; }
+    public Guid? ReceivedBy { get; set; }
+    public User? ReceivedByUser { get; set; }
+}
+
+public sealed class FinalSettlementStatus : SoftDeleteEntity
+{
+    public Guid ExitCaseId { get; set; }
+    public ExitCase? ExitCase { get; set; }
+    public string Status { get; set; } = "Pending";
+    public Guid? StatusUpdatedBy { get; set; }
+    public User? StatusUpdatedByUser { get; set; }
+    public DateTime StatusUpdatedAt { get; set; } = DateTime.UtcNow;
+    public string? Comments { get; set; }
+}
+
+public sealed class SalaryStructure : SoftDeleteEntity
+{
+    public Guid? EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid? GradeLevelId { get; set; }
+    public GradeLevel? GradeLevel { get; set; }
+    public decimal BasicSalary { get; set; }
+    public DateOnly EffectiveDate { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public sealed class PayrollItem : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = "Earning";
+    public bool Taxable { get; set; }
+    public bool Pensionable { get; set; }
+    public bool Recurring { get; set; }
+    public string CalculationMethod { get; set; } = "Fixed";
+    public decimal? Amount { get; set; }
+    public decimal? Percentage { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public sealed class EmployeePayrollItem : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid PayrollItemId { get; set; }
+    public PayrollItem? PayrollItem { get; set; }
+    public decimal? Amount { get; set; }
+    public decimal? Percentage { get; set; }
+    public DateOnly EffectiveDate { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public sealed class PayrollRun : SoftDeleteEntity
+{
+    public string Period { get; set; } = string.Empty;
+    public string Status { get; set; } = "Draft";
+    public Guid? PreparedBy { get; set; }
+    public User? PreparedByUser { get; set; }
+    public Guid? ReviewedBy { get; set; }
+    public User? ReviewedByUser { get; set; }
+    public Guid? ApprovedBy { get; set; }
+    public User? ApprovedByUser { get; set; }
+    public DateTime? FinalizedAt { get; set; }
+    public ICollection<PayrollRunEmployee> Employees { get; set; } = new List<PayrollRunEmployee>();
+}
+
+public sealed class PayrollRunEmployee : SoftDeleteEntity
+{
+    public Guid PayrollRunId { get; set; }
+    public PayrollRun? PayrollRun { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public decimal GrossSalary { get; set; }
+    public decimal TotalDeductions { get; set; }
+    public decimal NetSalary { get; set; }
+    public ICollection<PayrollEarning> Earnings { get; set; } = new List<PayrollEarning>();
+    public ICollection<PayrollDeduction> Deductions { get; set; } = new List<PayrollDeduction>();
+}
+
+public sealed class PayrollEarning : BaseEntity
+{
+    public Guid PayrollRunEmployeeId { get; set; }
+    public PayrollRunEmployee? PayrollRunEmployee { get; set; }
+    public Guid ItemId { get; set; }
+    public PayrollItem? Item { get; set; }
+    public decimal Amount { get; set; }
+    public string? CalculationBasis { get; set; }
+}
+
+public sealed class PayrollDeduction : BaseEntity
+{
+    public Guid PayrollRunEmployeeId { get; set; }
+    public PayrollRunEmployee? PayrollRunEmployee { get; set; }
+    public Guid ItemId { get; set; }
+    public PayrollItem? Item { get; set; }
+    public decimal Amount { get; set; }
+    public string? CalculationBasis { get; set; }
+}
+
+public sealed class TaxRule : SoftDeleteEntity
+{
+    public string RuleCode { get; set; } = string.Empty;
+    public decimal Rate { get; set; }
+    public decimal Threshold { get; set; }
+    public DateOnly EffectiveDate { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public sealed class PensionRule : SoftDeleteEntity
+{
+    public string RuleCode { get; set; } = string.Empty;
+    public decimal EmployeeRate { get; set; }
+    public decimal EmployerRate { get; set; }
+    public decimal Threshold { get; set; }
+    public DateOnly EffectiveDate { get; set; }
+    public string Status { get; set; } = "Active";
+}
+
+public sealed class EmployeeLoan : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public decimal LoanAmount { get; set; }
+    public decimal InterestFee { get; set; }
+    public DateOnly RepaymentStartDate { get; set; }
+    public decimal MonthlyRepayment { get; set; }
+    public decimal OutstandingBalance { get; set; }
+    public string LoanStatus { get; set; } = "Active";
+}
+
+public sealed class LoanRepayment : BaseEntity
+{
+    public Guid LoanId { get; set; }
+    public EmployeeLoan? Loan { get; set; }
+    public Guid PayrollRunId { get; set; }
+    public PayrollRun? PayrollRun { get; set; }
+    public decimal Amount { get; set; }
+    public DateOnly RepaymentDate { get; set; }
+}
+
+public sealed class Payslip : SoftDeleteEntity
+{
+    public Guid PayrollRunEmployeeId { get; set; }
+    public PayrollRunEmployee? PayrollRunEmployee { get; set; }
+    public string PayslipNumber { get; set; } = string.Empty;
+    public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
+    public string? FileReference { get; set; }
+}
+
+public sealed class PayrollApprovalAction : BaseEntity
+{
+    public Guid PayrollRunId { get; set; }
+    public PayrollRun? PayrollRun { get; set; }
+    public int Step { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class PayrollAuditHistory : BaseEntity
+{
+    public Guid PayrollRunId { get; set; }
+    public PayrollRun? PayrollRun { get; set; }
+    public string Action { get; set; } = string.Empty;
+    public string Actor { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+    public string? SnapshotData { get; set; }
+}
+
+public sealed class PerformanceCycle : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public string Status { get; set; } = "Draft";
+    public bool IsActive { get; set; }
+}
+
+public sealed class PerformanceTemplate : SoftDeleteEntity
+{
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string RatingScale { get; set; } = "Excellent,Very Good,Good,Average,Poor";
+    public decimal WeightRule { get; set; } = 100;
+    public bool IsActive { get; set; } = true;
+}
+
+public sealed class EmployeeGoal : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Target { get; set; } = string.Empty;
+    public decimal Weight { get; set; }
+    public string? Achievement { get; set; }
+    public string Status { get; set; } = "Draft";
+}
+
+public sealed class EmployeeKpi : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string Metric { get; set; } = string.Empty;
+    public string Target { get; set; } = string.Empty;
+    public string? Actual { get; set; }
+    public decimal Weight { get; set; }
+    public string Status { get; set; } = "Draft";
+}
+
+public sealed class SelfAssessment : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public Guid? GoalId { get; set; }
+    public EmployeeGoal? Goal { get; set; }
+    public Guid? KpiId { get; set; }
+    public EmployeeKpi? Kpi { get; set; }
+    public string SelfRating { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ManagerAssessment : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public Guid? GoalId { get; set; }
+    public EmployeeGoal? Goal { get; set; }
+    public Guid? KpiId { get; set; }
+    public EmployeeKpi? Kpi { get; set; }
+    public string ManagerRating { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public Guid SubmittedBy { get; set; }
+    public User? SubmittedByUser { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class HrPerformanceReview : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string ReviewComments { get; set; } = string.Empty;
+    public Guid ReviewedBy { get; set; }
+    public User? ReviewedByUser { get; set; }
+    public DateTime ReviewedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class PerformanceRating : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string FinalRating { get; set; } = "Good";
+    public Guid? ReleasedBy { get; set; }
+    public User? ReleasedByUser { get; set; }
+    public DateTime? ReleasedAt { get; set; }
+    public bool IsReleased { get; set; }
+}
+
+public sealed class PromotionRecommendation : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string Recommendation { get; set; } = string.Empty;
+    public string Justification { get; set; } = string.Empty;
+    public Guid RecommendedBy { get; set; }
+    public User? RecommendedByUser { get; set; }
+    public string Status { get; set; } = "Pending";
+}
+
+public sealed class PerformanceImprovementPlan : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string Objective { get; set; } = string.Empty;
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public string Status { get; set; } = "Open";
+    public string? Outcome { get; set; }
+}
+
+public sealed class PerformanceHistory : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid CycleId { get; set; }
+    public PerformanceCycle? Cycle { get; set; }
+    public string FinalRating { get; set; } = string.Empty;
+    public bool PromotionRecommended { get; set; }
+    public bool PipTriggered { get; set; }
+    public DateTime CompletedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class JobOpening : SoftDeleteEntity
+{
+    public string Title { get; set; } = string.Empty;
+    public Guid DepartmentId { get; set; }
+    public Department? Department { get; set; }
+    public Guid? BranchId { get; set; }
+    public Branch? Branch { get; set; }
+    public Guid? HiringManagerId { get; set; }
+    public User? HiringManager { get; set; }
+    public int Vacancies { get; set; }
+    public string EmploymentType { get; set; } = string.Empty;
+    public Guid? GradeLevelId { get; set; }
+    public GradeLevel? GradeLevel { get; set; }
+    public string JobDescription { get; set; } = string.Empty;
+    public string Requirements { get; set; } = string.Empty;
+    public DateOnly? PublicationDate { get; set; }
+    public DateOnly ClosingDate { get; set; }
+    public string Status { get; set; } = "Draft";
+}
+
+public sealed class VacancyPublication : SoftDeleteEntity
+{
+    public Guid JobOpeningId { get; set; }
+    public JobOpening? JobOpening { get; set; }
+    public string Channel { get; set; } = "Internal";
+    public DateTime PublishedAt { get; set; } = DateTime.UtcNow;
+    public DateTime ExpiresAt { get; set; }
+}
+
+public sealed class Candidate : SoftDeleteEntity
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? Phone { get; set; }
+    public string? Source { get; set; }
+}
+
+public sealed class CandidateApplication : SoftDeleteEntity
+{
+    public Guid CandidateId { get; set; }
+    public Candidate? Candidate { get; set; }
+    public Guid JobOpeningId { get; set; }
+    public JobOpening? JobOpening { get; set; }
+    public string Status { get; set; } = "Applied";
+    public DateTime AppliedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class CandidateDocument : SoftDeleteEntity
+{
+    public Guid CandidateId { get; set; }
+    public Candidate? Candidate { get; set; }
+    public string DocumentType { get; set; } = "CV";
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+}
+
+public sealed class InterviewSchedule : SoftDeleteEntity
+{
+    public Guid ApplicationId { get; set; }
+    public CandidateApplication? Application { get; set; }
+    public string InterviewStage { get; set; } = string.Empty;
+    public DateTime DateTime { get; set; }
+    public string? VenueOrMode { get; set; }
+    public string Status { get; set; } = "Scheduled";
+}
+
+public sealed class InterviewPanelMember : SoftDeleteEntity
+{
+    public Guid InterviewScheduleId { get; set; }
+    public InterviewSchedule? InterviewSchedule { get; set; }
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string Role { get; set; } = "Interviewer";
+}
+
+public sealed class InterviewFeedback : BaseEntity
+{
+    public Guid InterviewScheduleId { get; set; }
+    public InterviewSchedule? InterviewSchedule { get; set; }
+    public Guid PanelMemberId { get; set; }
+    public InterviewPanelMember? PanelMember { get; set; }
+    public decimal Score { get; set; }
+    public string? Comments { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class OfferLetter : SoftDeleteEntity
+{
+    public Guid ApplicationId { get; set; }
+    public CandidateApplication? Application { get; set; }
+    public string OfferDetails { get; set; } = string.Empty;
+    public decimal Salary { get; set; }
+    public string Status { get; set; } = "Draft";
+    public DateTime? SentAt { get; set; }
+    public DateTime? AcceptedAt { get; set; }
+}
+
+public sealed class RecruitmentStatusHistory : BaseEntity
+{
+    public Guid ApplicationId { get; set; }
+    public CandidateApplication? Application { get; set; }
+    public string? OldStatus { get; set; }
+    public string NewStatus { get; set; } = string.Empty;
+    public Guid ChangedBy { get; set; }
+    public User? ChangedByUser { get; set; }
+    public DateTime ChangedAt { get; set; } = DateTime.UtcNow;
+    public string? Comments { get; set; }
+}
+
+public sealed class TrainingProgram : SoftDeleteEntity
+{
+    public string Title { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? ProviderId { get; set; }
+    public string? Venue { get; set; }
+    public DateOnly StartDate { get; set; }
+    public DateOnly EndDate { get; set; }
+    public decimal Cost { get; set; }
+    public int Capacity { get; set; }
+    public Guid? TargetDepartmentId { get; set; }
+    public Department? TargetDepartment { get; set; }
+    public Guid? TargetGradeLevelId { get; set; }
+    public GradeLevel? TargetGradeLevel { get; set; }
+    public Guid? TargetSkillId { get; set; }
+    public Skill? TargetSkill { get; set; }
+    public string Status { get; set; } = "Draft";
+}
+
+public sealed class TrainingSchedule : SoftDeleteEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public DateOnly SessionDate { get; set; }
+    public TimeOnly StartTime { get; set; }
+    public TimeOnly EndTime { get; set; }
+    public string? Venue { get; set; }
+}
+
+public sealed class TrainingNomination : SoftDeleteEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid NominatedBy { get; set; }
+    public User? NominatedByUser { get; set; }
+    public string Status { get; set; } = "Pending";
+    public DateTime NominatedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class TrainingApprovalAction : BaseEntity
+{
+    public Guid NominationId { get; set; }
+    public TrainingNomination? Nomination { get; set; }
+    public Guid ActorUserId { get; set; }
+    public User? ActorUser { get; set; }
+    public string Decision { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public DateTime DecidedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class TrainingAttendance : BaseEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public DateOnly SessionDate { get; set; }
+    public bool Attended { get; set; }
+    public Guid MarkedBy { get; set; }
+    public User? MarkedByUser { get; set; }
+}
+
+public sealed class TrainingFeedback : BaseEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public int Score { get; set; }
+    public string? Comments { get; set; }
+    public DateTime SubmittedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class TrainingCertificate : SoftDeleteEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public DateOnly IssuedDate { get; set; }
+    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class Skill : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string? Category { get; set; }
+    public string? Description { get; set; }
+}
+
+public sealed class EmployeeSkill : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid SkillId { get; set; }
+    public Skill? Skill { get; set; }
+    public string ProficiencyLevel { get; set; } = "Beginner";
+    public DateOnly? AcquiredDate { get; set; }
+    public string Source { get; set; } = "Training";
+}
+
+public sealed class TrainingCost : SoftDeleteEntity
+{
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public string CostCategory { get; set; } = string.Empty;
+    public decimal Amount { get; set; }
+    public string? Provider { get; set; }
+    public string? InvoiceRef { get; set; }
+}
+
+public sealed class TrainingHistory : BaseEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid ProgramId { get; set; }
+    public TrainingProgram? Program { get; set; }
+    public string Status { get; set; } = "Completed";
+    public DateTime? CompletedAt { get; set; }
+}
+
 public sealed class Notification : SoftDeleteEntity
 {
     public Guid RecipientUserId { get; set; }

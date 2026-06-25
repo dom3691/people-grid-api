@@ -73,6 +73,76 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<AttendanceSource> AttendanceSources { get; set; }
     public DbSet<OvertimeRecord> OvertimeRecords { get; set; }
     public DbSet<AbsenceRecord> AbsenceRecords { get; set; }
+    public DbSet<OnboardingTemplate> OnboardingTemplates { get; set; }
+    public DbSet<OnboardingTemplateItem> OnboardingTemplateItems { get; set; }
+    public DbSet<OnboardingPlan> OnboardingPlans { get; set; }
+    public DbSet<OnboardingTask> OnboardingTasks { get; set; }
+    public DbSet<OnboardingDocument> OnboardingDocuments { get; set; }
+    public DbSet<PolicyAcknowledgement> PolicyAcknowledgements { get; set; }
+    public DbSet<EmployeeAssetAssignment> EmployeeAssetAssignments { get; set; }
+    public DbSet<ProbationRecord> ProbationRecords { get; set; }
+    public DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
+    public DbSet<DisciplinaryResponse> DisciplinaryResponses { get; set; }
+    public DbSet<DisciplinaryReview> DisciplinaryReviews { get; set; }
+    public DbSet<DisciplinaryAction> DisciplinaryActions { get; set; }
+    public DbSet<WarningLetter> WarningLetters { get; set; }
+    public DbSet<SuspensionRecord> SuspensionRecords { get; set; }
+    public DbSet<DisciplinaryEscalation> DisciplinaryEscalations { get; set; }
+    public DbSet<DisciplinaryAttachment> DisciplinaryAttachments { get; set; }
+    public DbSet<ExitCase> ExitCases { get; set; }
+    public DbSet<ResignationRequest> ResignationRequests { get; set; }
+    public DbSet<ExitApprovalAction> ExitApprovalActions { get; set; }
+    public DbSet<ExitClearanceItem> ExitClearanceItems { get; set; }
+    public DbSet<ExitHandoverRecord> ExitHandoverRecords { get; set; }
+    public DbSet<ExitInterviewResponse> ExitInterviewResponses { get; set; }
+    public DbSet<ExitAssetReturn> ExitAssetReturns { get; set; }
+    public DbSet<FinalSettlementStatus> FinalSettlementStatuses { get; set; }
+    public DbSet<SalaryStructure> SalaryStructures { get; set; }
+    public DbSet<PayrollItem> PayrollItems { get; set; }
+    public DbSet<EmployeePayrollItem> EmployeePayrollItems { get; set; }
+    public DbSet<PayrollRun> PayrollRuns { get; set; }
+    public DbSet<PayrollRunEmployee> PayrollRunEmployees { get; set; }
+    public DbSet<PayrollEarning> PayrollEarnings { get; set; }
+    public DbSet<PayrollDeduction> PayrollDeductions { get; set; }
+    public DbSet<TaxRule> TaxRules { get; set; }
+    public DbSet<PensionRule> PensionRules { get; set; }
+    public DbSet<EmployeeLoan> EmployeeLoans { get; set; }
+    public DbSet<LoanRepayment> LoanRepayments { get; set; }
+    public DbSet<Payslip> Payslips { get; set; }
+    public DbSet<PayrollApprovalAction> PayrollApprovalActions { get; set; }
+    public DbSet<PayrollAuditHistory> PayrollAuditHistories { get; set; }
+    public DbSet<PerformanceCycle> PerformanceCycles { get; set; }
+    public DbSet<PerformanceTemplate> PerformanceTemplates { get; set; }
+    public DbSet<EmployeeGoal> EmployeeGoals { get; set; }
+    public DbSet<EmployeeKpi> EmployeeKpis { get; set; }
+    public DbSet<SelfAssessment> SelfAssessments { get; set; }
+    public DbSet<ManagerAssessment> ManagerAssessments { get; set; }
+    public DbSet<HrPerformanceReview> HrPerformanceReviews { get; set; }
+    public DbSet<PerformanceRating> PerformanceRatings { get; set; }
+    public DbSet<PromotionRecommendation> PromotionRecommendations { get; set; }
+    public DbSet<PerformanceImprovementPlan> PerformanceImprovementPlans { get; set; }
+    public DbSet<PerformanceHistory> PerformanceHistories { get; set; }
+    public DbSet<JobOpening> JobOpenings { get; set; }
+    public DbSet<VacancyPublication> VacancyPublications { get; set; }
+    public DbSet<Candidate> Candidates { get; set; }
+    public DbSet<CandidateApplication> CandidateApplications { get; set; }
+    public DbSet<CandidateDocument> CandidateDocuments { get; set; }
+    public DbSet<InterviewSchedule> InterviewSchedules { get; set; }
+    public DbSet<InterviewPanelMember> InterviewPanelMembers { get; set; }
+    public DbSet<InterviewFeedback> InterviewFeedbacks { get; set; }
+    public DbSet<OfferLetter> OfferLetters { get; set; }
+    public DbSet<RecruitmentStatusHistory> RecruitmentStatusHistories { get; set; }
+    public DbSet<TrainingProgram> TrainingPrograms { get; set; }
+    public DbSet<TrainingSchedule> TrainingSchedules { get; set; }
+    public DbSet<TrainingNomination> TrainingNominations { get; set; }
+    public DbSet<TrainingApprovalAction> TrainingApprovalActions { get; set; }
+    public DbSet<TrainingAttendance> TrainingAttendance { get; set; }
+    public DbSet<TrainingFeedback> TrainingFeedback { get; set; }
+    public DbSet<TrainingCertificate> TrainingCertificates { get; set; }
+    public DbSet<Skill> Skills { get; set; }
+    public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
+    public DbSet<TrainingCost> TrainingCosts { get; set; }
+    public DbSet<TrainingHistory> TrainingHistories { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
     public DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
@@ -539,6 +609,117 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<AbsenceRecord>().HasIndex(x => new { x.EmployeeId, x.Date });
         modelBuilder.Entity<AbsenceRecord>().Property(x => x.AbsenceType).HasMaxLength(50);
         modelBuilder.Entity<AbsenceRecord>().Property(x => x.Reason).HasMaxLength(1000);
+        modelBuilder.Entity<OnboardingTemplate>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<OnboardingTemplateItem>().HasIndex(x => new { x.TemplateId, x.Sequence }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<OnboardingPlan>().HasIndex(x => x.EmployeeId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<OnboardingPlan>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<OnboardingTask>().HasIndex(x => x.PlanId);
+        modelBuilder.Entity<OnboardingTask>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<OnboardingDocument>().HasIndex(x => x.PlanId);
+        modelBuilder.Entity<PolicyAcknowledgement>().HasIndex(x => new { x.EmployeeId, x.PolicyId, x.AcknowledgedAt });
+        modelBuilder.Entity<EmployeeAssetAssignment>().HasIndex(x => new { x.EmployeeId, x.AssetTag });
+        modelBuilder.Entity<ProbationRecord>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<ProbationRecord>().ToTable(t => t.HasCheckConstraint("CK_ProbationRecords_Start_End", "[StartDate] < [EndDate]"));
+        modelBuilder.Entity<DisciplinaryCase>().HasIndex(x => x.CaseNumber).IsUnique();
+        modelBuilder.Entity<DisciplinaryCase>().HasIndex(x => new { x.EmployeeId, x.Status });
+        modelBuilder.Entity<DisciplinaryCase>().Property(x => x.CaseNumber).HasMaxLength(50);
+        modelBuilder.Entity<DisciplinaryCase>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<DisciplinaryCase>().ToTable(t => t.HasCheckConstraint("CK_DisciplinaryCases_Issue_ResponseDue", "[IssueDate] < [ResponseDueDate]"));
+        modelBuilder.Entity<DisciplinaryResponse>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<DisciplinaryReview>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<DisciplinaryAction>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<WarningLetter>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<SuspensionRecord>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<SuspensionRecord>().ToTable(t => t.HasCheckConstraint("CK_SuspensionRecords_Start_End", "[StartDate] <= [EndDate]"));
+        modelBuilder.Entity<DisciplinaryEscalation>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<DisciplinaryAttachment>().HasIndex(x => x.CaseId);
+        modelBuilder.Entity<ExitCase>().HasIndex(x => x.CaseNumber).IsUnique();
+        modelBuilder.Entity<ExitCase>().HasIndex(x => new { x.EmployeeId, x.Status });
+        modelBuilder.Entity<ExitCase>().Property(x => x.CaseNumber).HasMaxLength(50);
+        modelBuilder.Entity<ExitCase>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<ExitCase>().ToTable(t => t.HasCheckConstraint("CK_ExitCases_Resignation_LastWorkingDay", "[ResignationDate] < [LastWorkingDay]"));
+        modelBuilder.Entity<ResignationRequest>().HasIndex(x => x.ExitCaseId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ExitApprovalAction>().HasIndex(x => x.ExitCaseId);
+        modelBuilder.Entity<ExitClearanceItem>().HasIndex(x => x.ExitCaseId);
+        modelBuilder.Entity<ExitHandoverRecord>().HasIndex(x => x.ExitCaseId);
+        modelBuilder.Entity<ExitInterviewResponse>().HasIndex(x => x.ExitCaseId);
+        modelBuilder.Entity<ExitAssetReturn>().HasIndex(x => x.ExitCaseId);
+        modelBuilder.Entity<FinalSettlementStatus>().HasIndex(x => x.ExitCaseId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<SalaryStructure>().HasIndex(x => new { x.EmployeeId, x.EffectiveDate });
+        modelBuilder.Entity<SalaryStructure>().HasIndex(x => new { x.GradeLevelId, x.EffectiveDate });
+        modelBuilder.Entity<SalaryStructure>().Property(x => x.BasicSalary).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollItem>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<PayrollItem>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollItem>().Property(x => x.Percentage).HasPrecision(9, 4);
+        modelBuilder.Entity<EmployeePayrollItem>().HasIndex(x => new { x.EmployeeId, x.PayrollItemId, x.EffectiveDate });
+        modelBuilder.Entity<EmployeePayrollItem>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<EmployeePayrollItem>().Property(x => x.Percentage).HasPrecision(9, 4);
+        modelBuilder.Entity<PayrollRun>().HasIndex(x => x.Period).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PayrollRun>().Property(x => x.Period).HasMaxLength(20);
+        modelBuilder.Entity<PayrollRun>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<PayrollRunEmployee>().HasIndex(x => new { x.PayrollRunId, x.EmployeeId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PayrollRunEmployee>().Property(x => x.GrossSalary).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollRunEmployee>().Property(x => x.TotalDeductions).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollRunEmployee>().Property(x => x.NetSalary).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollEarning>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<PayrollDeduction>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<TaxRule>().HasIndex(x => x.RuleCode).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<TaxRule>().Property(x => x.Rate).HasPrecision(9, 4);
+        modelBuilder.Entity<TaxRule>().Property(x => x.Threshold).HasPrecision(18, 2);
+        modelBuilder.Entity<PensionRule>().HasIndex(x => x.RuleCode).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PensionRule>().Property(x => x.EmployeeRate).HasPrecision(9, 4);
+        modelBuilder.Entity<PensionRule>().Property(x => x.EmployerRate).HasPrecision(9, 4);
+        modelBuilder.Entity<PensionRule>().Property(x => x.Threshold).HasPrecision(18, 2);
+        modelBuilder.Entity<EmployeeLoan>().HasIndex(x => new { x.EmployeeId, x.LoanStatus });
+        modelBuilder.Entity<EmployeeLoan>().Property(x => x.LoanAmount).HasPrecision(18, 2);
+        modelBuilder.Entity<EmployeeLoan>().Property(x => x.InterestFee).HasPrecision(18, 2);
+        modelBuilder.Entity<EmployeeLoan>().Property(x => x.MonthlyRepayment).HasPrecision(18, 2);
+        modelBuilder.Entity<EmployeeLoan>().Property(x => x.OutstandingBalance).HasPrecision(18, 2);
+        modelBuilder.Entity<LoanRepayment>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<Payslip>().HasIndex(x => x.PayslipNumber).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PayrollApprovalAction>().HasIndex(x => x.PayrollRunId);
+        modelBuilder.Entity<PayrollAuditHistory>().HasIndex(x => new { x.PayrollRunId, x.Timestamp });
+        modelBuilder.Entity<PerformanceCycle>().HasIndex(x => new { x.Name, x.StartDate }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PerformanceCycle>().ToTable(t => t.HasCheckConstraint("CK_PerformanceCycles_Start_End", "[StartDate] < [EndDate]"));
+        modelBuilder.Entity<PerformanceTemplate>().HasIndex(x => new { x.CycleId, x.Name }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PerformanceTemplate>().Property(x => x.WeightRule).HasPrecision(9, 2);
+        modelBuilder.Entity<EmployeeGoal>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<EmployeeGoal>().Property(x => x.Weight).HasPrecision(9, 2);
+        modelBuilder.Entity<EmployeeKpi>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<EmployeeKpi>().Property(x => x.Weight).HasPrecision(9, 2);
+        modelBuilder.Entity<SelfAssessment>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<ManagerAssessment>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<HrPerformanceReview>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<PerformanceRating>().HasIndex(x => new { x.EmployeeId, x.CycleId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<PromotionRecommendation>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<PerformanceImprovementPlan>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<PerformanceImprovementPlan>().ToTable(t => t.HasCheckConstraint("CK_PerformanceImprovementPlans_Start_End", "[StartDate] < [EndDate]"));
+        modelBuilder.Entity<PerformanceHistory>().HasIndex(x => new { x.EmployeeId, x.CycleId });
+        modelBuilder.Entity<JobOpening>().HasIndex(x => new { x.DepartmentId, x.Status });
+        modelBuilder.Entity<JobOpening>().ToTable(t => t.HasCheckConstraint("CK_JobOpenings_Publication_Closing", "[PublicationDate] IS NULL OR [PublicationDate] <= [ClosingDate]"));
+        modelBuilder.Entity<Candidate>().HasIndex(x => x.Email);
+        modelBuilder.Entity<CandidateApplication>().HasIndex(x => new { x.CandidateId, x.JobOpeningId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<CandidateApplication>().HasIndex(x => x.Status);
+        modelBuilder.Entity<InterviewSchedule>().HasIndex(x => x.ApplicationId);
+        modelBuilder.Entity<InterviewPanelMember>().HasIndex(x => new { x.InterviewScheduleId, x.UserId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<InterviewFeedback>().HasIndex(x => new { x.InterviewScheduleId, x.PanelMemberId }).IsUnique();
+        modelBuilder.Entity<OfferLetter>().HasIndex(x => x.ApplicationId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<RecruitmentStatusHistory>().HasIndex(x => new { x.ApplicationId, x.ChangedAt });
+        modelBuilder.Entity<TrainingProgram>().HasIndex(x => x.Status);
+        modelBuilder.Entity<TrainingProgram>().Property(x => x.Cost).HasPrecision(18, 2);
+        modelBuilder.Entity<TrainingProgram>().ToTable(t => t.HasCheckConstraint("CK_TrainingPrograms_Start_End", "[StartDate] <= [EndDate]"));
+        modelBuilder.Entity<TrainingSchedule>().HasIndex(x => new { x.ProgramId, x.SessionDate });
+        modelBuilder.Entity<TrainingNomination>().HasIndex(x => new { x.ProgramId, x.EmployeeId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<TrainingApprovalAction>().HasIndex(x => x.NominationId);
+        modelBuilder.Entity<TrainingAttendance>().HasIndex(x => new { x.ProgramId, x.EmployeeId, x.SessionDate }).IsUnique();
+        modelBuilder.Entity<TrainingFeedback>().HasIndex(x => new { x.ProgramId, x.EmployeeId }).IsUnique();
+        modelBuilder.Entity<TrainingCertificate>().HasIndex(x => new { x.ProgramId, x.EmployeeId });
+        modelBuilder.Entity<Skill>().HasIndex(x => x.Code).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<EmployeeSkill>().HasIndex(x => new { x.EmployeeId, x.SkillId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<TrainingCost>().HasIndex(x => x.ProgramId);
+        modelBuilder.Entity<TrainingCost>().Property(x => x.Amount).HasPrecision(18, 2);
+        modelBuilder.Entity<TrainingCost>().ToTable(t => t.HasCheckConstraint("CK_TrainingCosts_Amount", "[Amount] >= 0"));
+        modelBuilder.Entity<TrainingHistory>().HasIndex(x => new { x.EmployeeId, x.ProgramId });
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         modelBuilder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
         modelBuilder.Entity<UserRole>().Property(x => x.AssignedBy).HasMaxLength(100);
@@ -1033,6 +1214,134 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<OvertimeRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<OvertimeRecord>().HasOne(x => x.ApprovedByUser).WithMany().HasForeignKey(x => x.ApprovedBy).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<AbsenceRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingTemplateItem>().HasOne(x => x.Template).WithMany(x => x.Items).HasForeignKey(x => x.TemplateId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingPlan>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingPlan>().HasOne(x => x.Template).WithMany().HasForeignKey(x => x.TemplateId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingTask>().HasOne(x => x.Plan).WithMany(x => x.Tasks).HasForeignKey(x => x.PlanId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingTask>().HasOne(x => x.OwnerUser).WithMany().HasForeignKey(x => x.OwnerUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingTask>().HasOne(x => x.CompletedByUser).WithMany().HasForeignKey(x => x.CompletedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingDocument>().HasOne(x => x.Plan).WithMany().HasForeignKey(x => x.PlanId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingDocument>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OnboardingDocument>().HasOne(x => x.DocumentType).WithMany().HasForeignKey(x => x.DocumentTypeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PolicyAcknowledgement>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeAssetAssignment>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProbationRecord>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ProbationRecord>().HasOne(x => x.ReviewerUser).WithMany().HasForeignKey(x => x.ReviewerUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryCase>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryCase>().HasOne(x => x.IssuedByUser).WithMany().HasForeignKey(x => x.IssuedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryResponse>().HasOne(x => x.Case).WithMany(x => x.Responses).HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryResponse>().HasOne(x => x.SubmittedByUser).WithMany().HasForeignKey(x => x.SubmittedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryReview>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryReview>().HasOne(x => x.ReviewedByUser).WithMany().HasForeignKey(x => x.ReviewedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryAction>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryAction>().HasOne(x => x.CreatedByUser).WithMany().HasForeignKey(x => x.CreatedByUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WarningLetter>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<WarningLetter>().HasOne(x => x.IssuedByUser).WithMany().HasForeignKey(x => x.IssuedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SuspensionRecord>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SuspensionRecord>().HasOne(x => x.ApprovedByUser).WithMany().HasForeignKey(x => x.ApprovedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryEscalation>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryEscalation>().HasOne(x => x.EscalatedToUser).WithMany().HasForeignKey(x => x.EscalatedTo).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryEscalation>().HasOne(x => x.EscalatedByUser).WithMany().HasForeignKey(x => x.EscalatedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryAttachment>().HasOne(x => x.Case).WithMany().HasForeignKey(x => x.CaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DisciplinaryAttachment>().HasOne(x => x.UploadedByUser).WithMany().HasForeignKey(x => x.UploadedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitCase>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ResignationRequest>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ResignationRequest>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitApprovalAction>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitApprovalAction>().HasOne(x => x.ActorUser).WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitClearanceItem>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitClearanceItem>().HasOne(x => x.OwnerUser).WithMany().HasForeignKey(x => x.OwnerUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitHandoverRecord>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitHandoverRecord>().HasOne(x => x.HandoverToUser).WithMany().HasForeignKey(x => x.HandoverToUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitInterviewResponse>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitAssetReturn>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ExitAssetReturn>().HasOne(x => x.ReceivedByUser).WithMany().HasForeignKey(x => x.ReceivedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<FinalSettlementStatus>().HasOne(x => x.ExitCase).WithMany().HasForeignKey(x => x.ExitCaseId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<FinalSettlementStatus>().HasOne(x => x.StatusUpdatedByUser).WithMany().HasForeignKey(x => x.StatusUpdatedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SalaryStructure>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SalaryStructure>().HasOne(x => x.GradeLevel).WithMany().HasForeignKey(x => x.GradeLevelId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeePayrollItem>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeePayrollItem>().HasOne(x => x.PayrollItem).WithMany().HasForeignKey(x => x.PayrollItemId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollRun>().HasOne(x => x.PreparedByUser).WithMany().HasForeignKey(x => x.PreparedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollRun>().HasOne(x => x.ReviewedByUser).WithMany().HasForeignKey(x => x.ReviewedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollRun>().HasOne(x => x.ApprovedByUser).WithMany().HasForeignKey(x => x.ApprovedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollRunEmployee>().HasOne(x => x.PayrollRun).WithMany(x => x.Employees).HasForeignKey(x => x.PayrollRunId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollRunEmployee>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollEarning>().HasOne(x => x.PayrollRunEmployee).WithMany(x => x.Earnings).HasForeignKey(x => x.PayrollRunEmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollEarning>().HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollDeduction>().HasOne(x => x.PayrollRunEmployee).WithMany(x => x.Deductions).HasForeignKey(x => x.PayrollRunEmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollDeduction>().HasOne(x => x.Item).WithMany().HasForeignKey(x => x.ItemId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeLoan>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LoanRepayment>().HasOne(x => x.Loan).WithMany().HasForeignKey(x => x.LoanId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<LoanRepayment>().HasOne(x => x.PayrollRun).WithMany().HasForeignKey(x => x.PayrollRunId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<Payslip>().HasOne(x => x.PayrollRunEmployee).WithMany().HasForeignKey(x => x.PayrollRunEmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollApprovalAction>().HasOne(x => x.PayrollRun).WithMany().HasForeignKey(x => x.PayrollRunId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollApprovalAction>().HasOne(x => x.ActorUser).WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PayrollAuditHistory>().HasOne(x => x.PayrollRun).WithMany().HasForeignKey(x => x.PayrollRunId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceTemplate>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeGoal>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeGoal>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeKpi>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeKpi>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelfAssessment>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelfAssessment>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelfAssessment>().HasOne(x => x.Goal).WithMany().HasForeignKey(x => x.GoalId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<SelfAssessment>().HasOne(x => x.Kpi).WithMany().HasForeignKey(x => x.KpiId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ManagerAssessment>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ManagerAssessment>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ManagerAssessment>().HasOne(x => x.Goal).WithMany().HasForeignKey(x => x.GoalId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ManagerAssessment>().HasOne(x => x.Kpi).WithMany().HasForeignKey(x => x.KpiId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ManagerAssessment>().HasOne(x => x.SubmittedByUser).WithMany().HasForeignKey(x => x.SubmittedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<HrPerformanceReview>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<HrPerformanceReview>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<HrPerformanceReview>().HasOne(x => x.ReviewedByUser).WithMany().HasForeignKey(x => x.ReviewedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceRating>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceRating>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceRating>().HasOne(x => x.ReleasedByUser).WithMany().HasForeignKey(x => x.ReleasedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PromotionRecommendation>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PromotionRecommendation>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PromotionRecommendation>().HasOne(x => x.RecommendedByUser).WithMany().HasForeignKey(x => x.RecommendedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceImprovementPlan>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceImprovementPlan>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceHistory>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<PerformanceHistory>().HasOne(x => x.Cycle).WithMany().HasForeignKey(x => x.CycleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<JobOpening>().HasOne(x => x.Department).WithMany().HasForeignKey(x => x.DepartmentId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<JobOpening>().HasOne(x => x.Branch).WithMany().HasForeignKey(x => x.BranchId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<JobOpening>().HasOne(x => x.HiringManager).WithMany().HasForeignKey(x => x.HiringManagerId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<JobOpening>().HasOne(x => x.GradeLevel).WithMany().HasForeignKey(x => x.GradeLevelId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<VacancyPublication>().HasOne(x => x.JobOpening).WithMany().HasForeignKey(x => x.JobOpeningId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CandidateApplication>().HasOne(x => x.Candidate).WithMany().HasForeignKey(x => x.CandidateId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CandidateApplication>().HasOne(x => x.JobOpening).WithMany().HasForeignKey(x => x.JobOpeningId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<CandidateDocument>().HasOne(x => x.Candidate).WithMany().HasForeignKey(x => x.CandidateId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<InterviewSchedule>().HasOne(x => x.Application).WithMany().HasForeignKey(x => x.ApplicationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<InterviewPanelMember>().HasOne(x => x.InterviewSchedule).WithMany().HasForeignKey(x => x.InterviewScheduleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<InterviewPanelMember>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<InterviewFeedback>().HasOne(x => x.InterviewSchedule).WithMany().HasForeignKey(x => x.InterviewScheduleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<InterviewFeedback>().HasOne(x => x.PanelMember).WithMany().HasForeignKey(x => x.PanelMemberId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<OfferLetter>().HasOne(x => x.Application).WithMany().HasForeignKey(x => x.ApplicationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<RecruitmentStatusHistory>().HasOne(x => x.Application).WithMany().HasForeignKey(x => x.ApplicationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<RecruitmentStatusHistory>().HasOne(x => x.ChangedByUser).WithMany().HasForeignKey(x => x.ChangedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingProgram>().HasOne(x => x.TargetDepartment).WithMany().HasForeignKey(x => x.TargetDepartmentId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingProgram>().HasOne(x => x.TargetGradeLevel).WithMany().HasForeignKey(x => x.TargetGradeLevelId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingProgram>().HasOne(x => x.TargetSkill).WithMany().HasForeignKey(x => x.TargetSkillId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingSchedule>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingNomination>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingNomination>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingNomination>().HasOne(x => x.NominatedByUser).WithMany().HasForeignKey(x => x.NominatedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingApprovalAction>().HasOne(x => x.Nomination).WithMany().HasForeignKey(x => x.NominationId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingApprovalAction>().HasOne(x => x.ActorUser).WithMany().HasForeignKey(x => x.ActorUserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingAttendance>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingAttendance>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingAttendance>().HasOne(x => x.MarkedByUser).WithMany().HasForeignKey(x => x.MarkedBy).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingFeedback>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingFeedback>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingCertificate>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingCertificate>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeSkill>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<EmployeeSkill>().HasOne(x => x.Skill).WithMany().HasForeignKey(x => x.SkillId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingCost>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingHistory>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<TrainingHistory>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {
@@ -1072,7 +1381,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     private void EnforceAppendOnlyLogs()
     {
         var immutableEntries = ChangeTracker.Entries()
-            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory || x.Entity is HRRequestStatusHistory || x.Entity is ApprovalAction || x.Entity is NotificationDeliveryLog || x.Entity is LeaveApprovalAction || x.Entity is AttendanceApprovalAction) &&
+            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory || x.Entity is HRRequestStatusHistory || x.Entity is ApprovalAction || x.Entity is NotificationDeliveryLog || x.Entity is LeaveApprovalAction || x.Entity is AttendanceApprovalAction || x.Entity is PolicyAcknowledgement || x.Entity is DisciplinaryResponse || x.Entity is DisciplinaryReview || x.Entity is ExitApprovalAction || x.Entity is ExitInterviewResponse || x.Entity is PayrollApprovalAction || x.Entity is PayrollAuditHistory || x.Entity is SelfAssessment || x.Entity is ManagerAssessment || x.Entity is HrPerformanceReview || x.Entity is PerformanceHistory || x.Entity is InterviewFeedback || x.Entity is RecruitmentStatusHistory || x.Entity is TrainingApprovalAction || x.Entity is TrainingAttendance || x.Entity is TrainingFeedback || x.Entity is TrainingHistory) &&
                         (x.State == EntityState.Modified || x.State == EntityState.Deleted));
 
         foreach (var entry in immutableEntries)

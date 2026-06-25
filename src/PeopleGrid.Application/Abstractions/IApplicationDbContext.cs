@@ -70,6 +70,76 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<AttendanceSource> AttendanceSources { get; set; }
     DbSet<OvertimeRecord> OvertimeRecords { get; set; }
     DbSet<AbsenceRecord> AbsenceRecords { get; set; }
+    DbSet<OnboardingTemplate> OnboardingTemplates { get; set; }
+    DbSet<OnboardingTemplateItem> OnboardingTemplateItems { get; set; }
+    DbSet<OnboardingPlan> OnboardingPlans { get; set; }
+    DbSet<OnboardingTask> OnboardingTasks { get; set; }
+    DbSet<OnboardingDocument> OnboardingDocuments { get; set; }
+    DbSet<PolicyAcknowledgement> PolicyAcknowledgements { get; set; }
+    DbSet<EmployeeAssetAssignment> EmployeeAssetAssignments { get; set; }
+    DbSet<ProbationRecord> ProbationRecords { get; set; }
+    DbSet<DisciplinaryCase> DisciplinaryCases { get; set; }
+    DbSet<DisciplinaryResponse> DisciplinaryResponses { get; set; }
+    DbSet<DisciplinaryReview> DisciplinaryReviews { get; set; }
+    DbSet<DisciplinaryAction> DisciplinaryActions { get; set; }
+    DbSet<WarningLetter> WarningLetters { get; set; }
+    DbSet<SuspensionRecord> SuspensionRecords { get; set; }
+    DbSet<DisciplinaryEscalation> DisciplinaryEscalations { get; set; }
+    DbSet<DisciplinaryAttachment> DisciplinaryAttachments { get; set; }
+    DbSet<ExitCase> ExitCases { get; set; }
+    DbSet<ResignationRequest> ResignationRequests { get; set; }
+    DbSet<ExitApprovalAction> ExitApprovalActions { get; set; }
+    DbSet<ExitClearanceItem> ExitClearanceItems { get; set; }
+    DbSet<ExitHandoverRecord> ExitHandoverRecords { get; set; }
+    DbSet<ExitInterviewResponse> ExitInterviewResponses { get; set; }
+    DbSet<ExitAssetReturn> ExitAssetReturns { get; set; }
+    DbSet<FinalSettlementStatus> FinalSettlementStatuses { get; set; }
+    DbSet<SalaryStructure> SalaryStructures { get; set; }
+    DbSet<PayrollItem> PayrollItems { get; set; }
+    DbSet<EmployeePayrollItem> EmployeePayrollItems { get; set; }
+    DbSet<PayrollRun> PayrollRuns { get; set; }
+    DbSet<PayrollRunEmployee> PayrollRunEmployees { get; set; }
+    DbSet<PayrollEarning> PayrollEarnings { get; set; }
+    DbSet<PayrollDeduction> PayrollDeductions { get; set; }
+    DbSet<TaxRule> TaxRules { get; set; }
+    DbSet<PensionRule> PensionRules { get; set; }
+    DbSet<EmployeeLoan> EmployeeLoans { get; set; }
+    DbSet<LoanRepayment> LoanRepayments { get; set; }
+    DbSet<Payslip> Payslips { get; set; }
+    DbSet<PayrollApprovalAction> PayrollApprovalActions { get; set; }
+    DbSet<PayrollAuditHistory> PayrollAuditHistories { get; set; }
+    DbSet<PerformanceCycle> PerformanceCycles { get; set; }
+    DbSet<PerformanceTemplate> PerformanceTemplates { get; set; }
+    DbSet<EmployeeGoal> EmployeeGoals { get; set; }
+    DbSet<EmployeeKpi> EmployeeKpis { get; set; }
+    DbSet<SelfAssessment> SelfAssessments { get; set; }
+    DbSet<ManagerAssessment> ManagerAssessments { get; set; }
+    DbSet<HrPerformanceReview> HrPerformanceReviews { get; set; }
+    DbSet<PerformanceRating> PerformanceRatings { get; set; }
+    DbSet<PromotionRecommendation> PromotionRecommendations { get; set; }
+    DbSet<PerformanceImprovementPlan> PerformanceImprovementPlans { get; set; }
+    DbSet<PerformanceHistory> PerformanceHistories { get; set; }
+    DbSet<JobOpening> JobOpenings { get; set; }
+    DbSet<VacancyPublication> VacancyPublications { get; set; }
+    DbSet<Candidate> Candidates { get; set; }
+    DbSet<CandidateApplication> CandidateApplications { get; set; }
+    DbSet<CandidateDocument> CandidateDocuments { get; set; }
+    DbSet<InterviewSchedule> InterviewSchedules { get; set; }
+    DbSet<InterviewPanelMember> InterviewPanelMembers { get; set; }
+    DbSet<InterviewFeedback> InterviewFeedbacks { get; set; }
+    DbSet<OfferLetter> OfferLetters { get; set; }
+    DbSet<RecruitmentStatusHistory> RecruitmentStatusHistories { get; set; }
+    DbSet<TrainingProgram> TrainingPrograms { get; set; }
+    DbSet<TrainingSchedule> TrainingSchedules { get; set; }
+    DbSet<TrainingNomination> TrainingNominations { get; set; }
+    DbSet<TrainingApprovalAction> TrainingApprovalActions { get; set; }
+    DbSet<TrainingAttendance> TrainingAttendance { get; set; }
+    DbSet<TrainingFeedback> TrainingFeedback { get; set; }
+    DbSet<TrainingCertificate> TrainingCertificates { get; set; }
+    DbSet<Skill> Skills { get; set; }
+    DbSet<EmployeeSkill> EmployeeSkills { get; set; }
+    DbSet<TrainingCost> TrainingCosts { get; set; }
+    DbSet<TrainingHistory> TrainingHistories { get; set; }
     DbSet<Notification> Notifications { get; set; }
     DbSet<NotificationTemplate> NotificationTemplates { get; set; }
     DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
