@@ -17,6 +17,7 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<UserRole> UserRoles { get; set; }
     DbSet<RolePermission> RolePermissions { get; set; }
     DbSet<Department> Departments { get; set; }
+    DbSet<UserManagerAssignment> UserManagerAssignments { get; set; }
     DbSet<Unit> Units { get; set; }
     DbSet<Branch> Branches { get; set; }
     DbSet<JobTitle> JobTitles { get; set; }

@@ -31,6 +31,9 @@ public sealed class User : SoftDeleteEntity
     public ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
     public ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
     public ICollection<PasswordHistory> PasswordHistories { get; set; } = new List<PasswordHistory>();
+    public ICollection<Department> HeadedDepartments { get; set; } = new List<Department>();
+    public ICollection<UserManagerAssignment> ManagerAssignments { get; set; } = new List<UserManagerAssignment>();
+    public ICollection<UserManagerAssignment> DirectReportAssignments { get; set; } = new List<UserManagerAssignment>();
     public UserProfile? Profile { get; set; }
 }
 
@@ -156,10 +159,22 @@ public sealed class Department : SoftDeleteEntity
     public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
     public Guid? HeadUserId { get; set; }
+    public User? HeadUser { get; set; }
     public string Status { get; set; } = "Active";
     public bool IsActive { get; set; } = true;
     public ICollection<Unit> Units { get; set; } = new List<Unit>();
     public ICollection<UserProfile> UserProfiles { get; set; } = new List<UserProfile>();
+}
+
+public sealed class UserManagerAssignment : SoftDeleteEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public Guid ManagerUserId { get; set; }
+    public User? ManagerUser { get; set; }
+    public DateTime EffectiveFrom { get; set; }
+    public DateTime? EffectiveTo { get; set; }
+    public bool IsCurrent { get; set; } = true;
 }
 
 public sealed class Unit : SoftDeleteEntity

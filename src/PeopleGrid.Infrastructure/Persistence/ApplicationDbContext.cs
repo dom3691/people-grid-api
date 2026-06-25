@@ -20,6 +20,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<UserRole> UserRoles { get; set; }
     public DbSet<RolePermission> RolePermissions { get; set; }
     public DbSet<Department> Departments { get; set; }
+    public DbSet<UserManagerAssignment> UserManagerAssignments { get; set; }
     public DbSet<Unit> Units { get; set; }
     public DbSet<Branch> Branches { get; set; }
     public DbSet<JobTitle> JobTitles { get; set; }
@@ -84,15 +85,42 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<Permission>().Property(x => x.Action).HasMaxLength(100);
         modelBuilder.Entity<Permission>().Property(x => x.Description).HasMaxLength(500);
         modelBuilder.Entity<Department>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<Department>().HasIndex(x => x.HeadUserId);
         modelBuilder.Entity<Department>().HasIndex(x => x.Status);
+        modelBuilder.Entity<Department>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<Department>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<Department>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<UserManagerAssignment>().HasIndex(x => x.UserId);
+        modelBuilder.Entity<UserManagerAssignment>().HasIndex(x => x.ManagerUserId);
+        modelBuilder.Entity<UserManagerAssignment>().HasIndex(x => x.IsCurrent);
+        modelBuilder.Entity<UserManagerAssignment>().HasIndex(x => new { x.UserId, x.IsCurrent });
+        modelBuilder.Entity<UserManagerAssignment>()
+            .HasIndex(x => new { x.UserId, x.ManagerUserId, x.EffectiveFrom })
+            .IsUnique();
+        modelBuilder.Entity<UserManagerAssignment>()
+            .HasIndex(x => x.UserId)
+            .IsUnique()
+            .HasFilter("[IsCurrent] = 1 AND [IsDeleted] = 0");
         modelBuilder.Entity<Unit>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Unit>().HasIndex(x => x.DepartmentId);
         modelBuilder.Entity<Unit>().HasIndex(x => x.Status);
+        modelBuilder.Entity<Unit>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<Unit>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<Unit>().Property(x => x.Status).HasMaxLength(50);
         modelBuilder.Entity<Branch>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<Branch>().HasIndex(x => x.Status);
+        modelBuilder.Entity<Branch>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<Branch>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<Branch>().Property(x => x.Address).HasMaxLength(500);
+        modelBuilder.Entity<Branch>().Property(x => x.Country).HasMaxLength(100);
+        modelBuilder.Entity<Branch>().Property(x => x.StateRegion).HasMaxLength(100);
+        modelBuilder.Entity<Branch>().Property(x => x.Status).HasMaxLength(50);
         modelBuilder.Entity<JobTitle>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<JobTitle>().HasIndex(x => x.GradeLevelId);
         modelBuilder.Entity<JobTitle>().HasIndex(x => x.Status);
+        modelBuilder.Entity<JobTitle>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<JobTitle>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<JobTitle>().Property(x => x.Status).HasMaxLength(50);
         modelBuilder.Entity<GradeLevel>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<EmploymentType>().HasIndex(x => x.Code).IsUnique();
         modelBuilder.Entity<EmploymentType>().HasIndex(x => x.Status);
@@ -130,6 +158,30 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             .HasOne(x => x.Permission)
             .WithMany(x => x.RolePermissions)
             .HasForeignKey(x => x.PermissionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Department>()
+            .HasOne(x => x.HeadUser)
+            .WithMany(x => x.HeadedDepartments)
+            .HasForeignKey(x => x.HeadUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<UserManagerAssignment>()
+            .HasOne(x => x.User)
+            .WithMany(x => x.ManagerAssignments)
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<UserManagerAssignment>()
+            .HasOne(x => x.ManagerUser)
+            .WithMany(x => x.DirectReportAssignments)
+            .HasForeignKey(x => x.ManagerUserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Unit>()
+            .HasOne(x => x.Department)
+            .WithMany(x => x.Units)
+            .HasForeignKey(x => x.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<User>()
