@@ -362,3 +362,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 /src/PeopleGrid.Api/appsettings.Development.json
+
+
+# Ignore EF Core migrations
+src/PeopleGrid.Infrastructure/Persistence/Migrations/
