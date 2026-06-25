@@ -29,7 +29,19 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<PublicHoliday> PublicHolidays { get; set; }
     DbSet<SystemParameter> SystemParameters { get; set; }
     DbSet<Employee> Employees { get; set; }
+    DbSet<EmployeePersonalInfo> EmployeePersonalInfos { get; set; }
+    DbSet<EmployeeContactInfo> EmployeeContactInfos { get; set; }
+    DbSet<EmployeeEmploymentInfo> EmployeeEmploymentInfos { get; set; }
+    DbSet<EmployeeBankInfo> EmployeeBankInfos { get; set; }
+    DbSet<EmployeeNextOfKin> EmployeeNextOfKin { get; set; }
+    DbSet<EmployeeEmergencyContact> EmployeeEmergencyContacts { get; set; }
+    DbSet<EmployeeJobHistory> EmployeeJobHistories { get; set; }
+    DbSet<EmployeeStatusHistory> EmployeeStatusHistories { get; set; }
     DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
+    DbSet<DocumentType> DocumentTypes { get; set; }
+    DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
+    DbSet<DocumentVerificationHistory> DocumentVerificationHistories { get; set; }
+    DbSet<DocumentStorageReference> DocumentStorageReferences { get; set; }
     DbSet<HRRequest> HRRequests { get; set; }
     DbSet<ApprovalFlow> ApprovalFlows { get; set; }
     DbSet<ApprovalStep> ApprovalSteps { get; set; }

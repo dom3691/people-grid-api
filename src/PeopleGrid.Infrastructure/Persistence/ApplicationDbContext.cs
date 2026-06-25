@@ -32,7 +32,19 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<PublicHoliday> PublicHolidays { get; set; }
     public DbSet<SystemParameter> SystemParameters { get; set; }
     public DbSet<Employee> Employees { get; set; }
+    public DbSet<EmployeePersonalInfo> EmployeePersonalInfos { get; set; }
+    public DbSet<EmployeeContactInfo> EmployeeContactInfos { get; set; }
+    public DbSet<EmployeeEmploymentInfo> EmployeeEmploymentInfos { get; set; }
+    public DbSet<EmployeeBankInfo> EmployeeBankInfos { get; set; }
+    public DbSet<EmployeeNextOfKin> EmployeeNextOfKin { get; set; }
+    public DbSet<EmployeeEmergencyContact> EmployeeEmergencyContacts { get; set; }
+    public DbSet<EmployeeJobHistory> EmployeeJobHistories { get; set; }
+    public DbSet<EmployeeStatusHistory> EmployeeStatusHistories { get; set; }
     public DbSet<EmployeeDocument> EmployeeDocuments { get; set; }
+    public DbSet<DocumentType> DocumentTypes { get; set; }
+    public DbSet<DocumentAccessRule> DocumentAccessRules { get; set; }
+    public DbSet<DocumentVerificationHistory> DocumentVerificationHistories { get; set; }
+    public DbSet<DocumentStorageReference> DocumentStorageReferences { get; set; }
     public DbSet<HRRequest> HRRequests { get; set; }
     public DbSet<ApprovalFlow> ApprovalFlows { get; set; }
     public DbSet<ApprovalStep> ApprovalSteps { get; set; }
@@ -205,6 +217,144 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<SystemParameter>().Property(x => x.Description).HasMaxLength(500);
         modelBuilder.Entity<Employee>().HasIndex(x => x.EmployeeNumber).IsUnique();
         modelBuilder.Entity<Employee>().HasIndex(x => x.WorkEmail).IsUnique();
+        modelBuilder.Entity<Employee>()
+            .HasIndex(x => x.UserId)
+            .IsUnique()
+            .HasFilter("[UserId] IS NOT NULL AND [IsDeleted] = 0");
+        modelBuilder.Entity<Employee>().HasIndex(x => x.Status);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.DepartmentId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.UnitId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.BranchId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.JobTitleId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.GradeLevelId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.LineManagerId);
+        modelBuilder.Entity<Employee>().HasIndex(x => x.DeactivatedAt);
+        modelBuilder.Entity<Employee>().Property(x => x.EmployeeNumber).HasMaxLength(50);
+        modelBuilder.Entity<Employee>().Property(x => x.FirstName).HasMaxLength(100);
+        modelBuilder.Entity<Employee>().Property(x => x.LastName).HasMaxLength(100);
+        modelBuilder.Entity<Employee>().Property(x => x.WorkEmail).HasMaxLength(256);
+        modelBuilder.Entity<Employee>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<Employee>().Property(x => x.DeactivationReason).HasMaxLength(500);
+
+        modelBuilder.Entity<EmployeePersonalInfo>().Ignore(x => x.Id);
+        modelBuilder.Entity<EmployeePersonalInfo>().HasKey(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.FirstName).HasMaxLength(100);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.MiddleName).HasMaxLength(100);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.LastName).HasMaxLength(100);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.Gender).HasMaxLength(50);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.MaritalStatus).HasMaxLength(50);
+        modelBuilder.Entity<EmployeePersonalInfo>().Property(x => x.Nationality).HasMaxLength(100);
+
+        modelBuilder.Entity<EmployeeContactInfo>().Ignore(x => x.Id);
+        modelBuilder.Entity<EmployeeContactInfo>().HasKey(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeContactInfo>().HasIndex(x => x.WorkEmail).IsUnique();
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.WorkEmail).HasMaxLength(256);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.PersonalEmail).HasMaxLength(256);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.Phone).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.Address).HasMaxLength(500);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.City).HasMaxLength(100);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.State).HasMaxLength(100);
+        modelBuilder.Entity<EmployeeContactInfo>().Property(x => x.Country).HasMaxLength(100);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>().Ignore(x => x.Id);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasKey(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.DepartmentId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.UnitId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.BranchId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.JobTitleId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.GradeLevelId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.EmploymentTypeId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.LineManagerId);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.HireDate);
+        modelBuilder.Entity<EmployeeEmploymentInfo>().HasIndex(x => x.ConfirmationDate);
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .ToTable(t => t.HasCheckConstraint("CK_EmployeeEmploymentInfos_HireDate_ConfirmationDate", "[ConfirmationDate] IS NULL OR [HireDate] <= [ConfirmationDate]"));
+
+        modelBuilder.Entity<EmployeeBankInfo>().Ignore(x => x.Id);
+        modelBuilder.Entity<EmployeeBankInfo>().HasKey(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeBankInfo>().Property(x => x.BankName).HasMaxLength(150);
+        modelBuilder.Entity<EmployeeBankInfo>().Property(x => x.BankCode).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeBankInfo>().Property(x => x.AccountNumberEncrypted).HasMaxLength(1000);
+        modelBuilder.Entity<EmployeeBankInfo>().Property(x => x.AccountName).HasMaxLength(150);
+
+        modelBuilder.Entity<EmployeeNextOfKin>().Ignore(x => x.Id);
+        modelBuilder.Entity<EmployeeNextOfKin>().HasKey(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeNextOfKin>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<EmployeeNextOfKin>().Property(x => x.Relationship).HasMaxLength(100);
+        modelBuilder.Entity<EmployeeNextOfKin>().Property(x => x.Phone).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeNextOfKin>().Property(x => x.Email).HasMaxLength(256);
+        modelBuilder.Entity<EmployeeNextOfKin>().Property(x => x.Address).HasMaxLength(500);
+
+        modelBuilder.Entity<EmployeeEmergencyContact>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeEmergencyContact>()
+            .HasIndex(x => new { x.EmployeeId, x.Priority })
+            .IsUnique()
+            .HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<EmployeeEmergencyContact>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<EmployeeEmergencyContact>().Property(x => x.Relationship).HasMaxLength(100);
+        modelBuilder.Entity<EmployeeEmergencyContact>().Property(x => x.Phone).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeEmergencyContact>().Property(x => x.Email).HasMaxLength(256);
+        modelBuilder.Entity<EmployeeEmergencyContact>().Property(x => x.Address).HasMaxLength(500);
+
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.EffectiveDate);
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => new { x.EmployeeId, x.EffectiveDate });
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.FromJobTitleId);
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.ToJobTitleId);
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.FromDepartmentId);
+        modelBuilder.Entity<EmployeeJobHistory>().HasIndex(x => x.ToDepartmentId);
+        modelBuilder.Entity<EmployeeJobHistory>().Property(x => x.Reason).HasMaxLength(500);
+
+        modelBuilder.Entity<EmployeeStatusHistory>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeStatusHistory>().HasIndex(x => x.EffectiveDate);
+        modelBuilder.Entity<EmployeeStatusHistory>().HasIndex(x => new { x.EmployeeId, x.EffectiveDate });
+        modelBuilder.Entity<EmployeeStatusHistory>().HasIndex(x => x.NewStatus);
+        modelBuilder.Entity<EmployeeStatusHistory>().Property(x => x.OldStatus).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeStatusHistory>().Property(x => x.NewStatus).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeStatusHistory>().Property(x => x.Reason).HasMaxLength(500);
+        modelBuilder.Entity<EmployeeStatusHistory>().Property(x => x.ChangedBy).HasMaxLength(100);
+        modelBuilder.Entity<EmployeeDocument>().HasIndex(x => x.EmployeeId);
+        modelBuilder.Entity<EmployeeDocument>().HasIndex(x => x.DocumentTypeId);
+        modelBuilder.Entity<EmployeeDocument>().HasIndex(x => x.VerificationStatus);
+        modelBuilder.Entity<EmployeeDocument>().HasIndex(x => x.ExpiryDate);
+        modelBuilder.Entity<EmployeeDocument>().HasIndex(x => x.IsArchived);
+        modelBuilder.Entity<EmployeeDocument>().Property(x => x.LegacyDocumentType).HasColumnName("DocumentType").HasMaxLength(100);
+        modelBuilder.Entity<EmployeeDocument>().Property(x => x.Title).HasMaxLength(200);
+        modelBuilder.Entity<EmployeeDocument>().Property(x => x.FileName).HasMaxLength(255);
+        modelBuilder.Entity<EmployeeDocument>().Property(x => x.StorageKey).HasMaxLength(500);
+        modelBuilder.Entity<EmployeeDocument>().Property(x => x.VerificationStatus).HasMaxLength(50);
+        modelBuilder.Entity<EmployeeDocument>()
+            .ToTable(t => t.HasCheckConstraint("CK_EmployeeDocuments_IssueDate_ExpiryDate", "[IssueDate] IS NULL OR [ExpiryDate] IS NULL OR [IssueDate] <= CONVERT(date, [ExpiryDate])"));
+
+        modelBuilder.Entity<DocumentType>().HasIndex(x => x.Code).IsUnique();
+        modelBuilder.Entity<DocumentType>().HasIndex(x => x.Status);
+        modelBuilder.Entity<DocumentType>().Property(x => x.Code).HasMaxLength(50);
+        modelBuilder.Entity<DocumentType>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<DocumentType>().Property(x => x.AllowedExtensions).HasMaxLength(500);
+        modelBuilder.Entity<DocumentType>().Property(x => x.ConfidentialityLevel).HasMaxLength(50);
+        modelBuilder.Entity<DocumentType>().Property(x => x.Status).HasMaxLength(50);
+
+        modelBuilder.Entity<DocumentAccessRule>()
+            .HasIndex(x => new { x.DocumentTypeId, x.RoleId })
+            .IsUnique()
+            .HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<DocumentAccessRule>().Property(x => x.AccessLevel).HasMaxLength(50);
+
+        modelBuilder.Entity<DocumentVerificationHistory>().HasIndex(x => x.DocumentId);
+        modelBuilder.Entity<DocumentVerificationHistory>().HasIndex(x => x.VerifiedBy);
+        modelBuilder.Entity<DocumentVerificationHistory>().HasIndex(x => x.VerifiedAt);
+        modelBuilder.Entity<DocumentVerificationHistory>().HasIndex(x => x.Status);
+        modelBuilder.Entity<DocumentVerificationHistory>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<DocumentVerificationHistory>().Property(x => x.Comments).HasMaxLength(1000);
+
+        modelBuilder.Entity<DocumentStorageReference>().Ignore(x => x.Id);
+        modelBuilder.Entity<DocumentStorageReference>().HasKey(x => x.DocumentId);
+        modelBuilder.Entity<DocumentStorageReference>().HasIndex(x => x.BlobKey);
+        modelBuilder.Entity<DocumentStorageReference>().HasIndex(x => x.UploadedAt);
+        modelBuilder.Entity<DocumentStorageReference>().Property(x => x.StorageProvider).HasMaxLength(50);
+        modelBuilder.Entity<DocumentStorageReference>().Property(x => x.ContainerName).HasMaxLength(150);
+        modelBuilder.Entity<DocumentStorageReference>().Property(x => x.BlobKey).HasMaxLength(500);
+        modelBuilder.Entity<DocumentStorageReference>().Property(x => x.ContentType).HasMaxLength(150);
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         modelBuilder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
         modelBuilder.Entity<UserRole>().Property(x => x.AssignedBy).HasMaxLength(100);
@@ -317,6 +467,204 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
             .HasForeignKey<AuditLogDetail>(x => x.AuditLogId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<Department>()
+            .WithMany()
+            .HasForeignKey(x => x.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<Unit>()
+            .WithMany()
+            .HasForeignKey(x => x.UnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<Branch>()
+            .WithMany()
+            .HasForeignKey(x => x.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<JobTitle>()
+            .WithMany()
+            .HasForeignKey(x => x.JobTitleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<GradeLevel>()
+            .WithMany()
+            .HasForeignKey(x => x.GradeLevelId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.LineManagerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.PersonalInfo)
+            .WithOne(x => x.Employee)
+            .HasForeignKey<EmployeePersonalInfo>(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.ContactInfo)
+            .WithOne(x => x.Employee)
+            .HasForeignKey<EmployeeContactInfo>(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.EmploymentInfo)
+            .WithOne(x => x.Employee)
+            .HasForeignKey<EmployeeEmploymentInfo>(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.BankInfo)
+            .WithOne(x => x.Employee)
+            .HasForeignKey<EmployeeBankInfo>(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasOne(x => x.NextOfKin)
+            .WithOne(x => x.Employee)
+            .HasForeignKey<EmployeeNextOfKin>(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasMany(x => x.EmergencyContacts)
+            .WithOne(x => x.Employee)
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasMany(x => x.JobHistory)
+            .WithOne(x => x.Employee)
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Employee>()
+            .HasMany(x => x.StatusHistory)
+            .WithOne(x => x.Employee)
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.Department)
+            .WithMany()
+            .HasForeignKey(x => x.DepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.Unit)
+            .WithMany()
+            .HasForeignKey(x => x.UnitId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.Branch)
+            .WithMany()
+            .HasForeignKey(x => x.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.JobTitle)
+            .WithMany()
+            .HasForeignKey(x => x.JobTitleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.GradeLevel)
+            .WithMany()
+            .HasForeignKey(x => x.GradeLevelId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.EmploymentType)
+            .WithMany()
+            .HasForeignKey(x => x.EmploymentTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeEmploymentInfo>()
+            .HasOne(x => x.LineManager)
+            .WithMany()
+            .HasForeignKey(x => x.LineManagerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeJobHistory>()
+            .HasOne(x => x.FromJobTitle)
+            .WithMany()
+            .HasForeignKey(x => x.FromJobTitleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeJobHistory>()
+            .HasOne(x => x.ToJobTitle)
+            .WithMany()
+            .HasForeignKey(x => x.ToJobTitleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeJobHistory>()
+            .HasOne(x => x.FromDepartment)
+            .WithMany()
+            .HasForeignKey(x => x.FromDepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeJobHistory>()
+            .HasOne(x => x.ToDepartment)
+            .WithMany()
+            .HasForeignKey(x => x.ToDepartmentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeDocument>()
+            .HasOne(x => x.Employee)
+            .WithMany()
+            .HasForeignKey(x => x.EmployeeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeDocument>()
+            .HasOne(x => x.DocumentType)
+            .WithMany(x => x.EmployeeDocuments)
+            .HasForeignKey(x => x.DocumentTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DocumentAccessRule>()
+            .HasOne(x => x.DocumentType)
+            .WithMany(x => x.AccessRules)
+            .HasForeignKey(x => x.DocumentTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DocumentAccessRule>()
+            .HasOne(x => x.Role)
+            .WithMany(x => x.DocumentAccessRules)
+            .HasForeignKey(x => x.RoleId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DocumentVerificationHistory>()
+            .HasOne(x => x.Document)
+            .WithMany(x => x.VerificationHistory)
+            .HasForeignKey(x => x.DocumentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<DocumentVerificationHistory>()
+            .HasOne(x => x.VerifiedByUser)
+            .WithMany()
+            .HasForeignKey(x => x.VerifiedBy)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<EmployeeDocument>()
+            .HasOne(x => x.StorageReference)
+            .WithOne(x => x.Document)
+            .HasForeignKey<DocumentStorageReference>(x => x.DocumentId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {
             var parameter = Expression.Parameter(entityType.ClrType, "e");
@@ -355,7 +703,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     private void EnforceAppendOnlyLogs()
     {
         var immutableEntries = ChangeTracker.Entries()
-            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt) &&
+            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory) &&
                         (x.State == EntityState.Modified || x.State == EntityState.Deleted));
 
         foreach (var entry in immutableEntries)

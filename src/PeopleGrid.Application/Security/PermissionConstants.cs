@@ -6,6 +6,9 @@ public static class PermissionConstants
     public const string EmployeeCreate = "Employee.Create";
     public const string EmployeeEdit = "Employee.Edit";
     public const string EmployeeDeactivate = "Employee.Deactivate";
+    public const string EmployeeDocumentView = "EmployeeDocument.View";
+    public const string EmployeeDocumentManage = "EmployeeDocument.Manage";
+    public const string EmployeeDocumentVerify = "EmployeeDocument.Verify";
     public const string LeaveApply = "Leave.Apply";
     public const string LeaveApprove = "Leave.Approve";
     public const string PayrollProcess = "Payroll.Process";
@@ -17,6 +20,7 @@ public static class PermissionConstants
     public static readonly string[] All =
     [
         EmployeeView, EmployeeCreate, EmployeeEdit, EmployeeDeactivate,
+        EmployeeDocumentView, EmployeeDocumentManage, EmployeeDocumentVerify,
         LeaveApply, LeaveApprove, PayrollProcess, ReportExport,
         SettingsManage, AuditView, AuditExport,
         "User.View", "User.Create", "User.Edit", "User.Deactivate",

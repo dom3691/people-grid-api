@@ -123,6 +123,7 @@ public sealed class Role : SoftDeleteEntity
     public bool IsActive { get; set; } = true;
     public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     public ICollection<RolePermission> RolePermissions { get; set; } = new List<RolePermission>();
+    public ICollection<DocumentAccessRule> DocumentAccessRules { get; set; } = new List<DocumentAccessRule>();
 }
 
 public sealed class Permission : AuditableEntity
@@ -295,17 +296,190 @@ public sealed class Employee : SoftDeleteEntity
     public Guid? GradeLevelId { get; set; }
     public Guid? LineManagerId { get; set; }
     public string Status { get; set; } = "Active";
+    public DateTime? DeactivatedAt { get; set; }
+    public string? DeactivationReason { get; set; }
+    public EmployeePersonalInfo? PersonalInfo { get; set; }
+    public EmployeeContactInfo? ContactInfo { get; set; }
+    public EmployeeEmploymentInfo? EmploymentInfo { get; set; }
+    public EmployeeBankInfo? BankInfo { get; set; }
+    public EmployeeNextOfKin? NextOfKin { get; set; }
+    public ICollection<EmployeeEmergencyContact> EmergencyContacts { get; set; } = new List<EmployeeEmergencyContact>();
+    public ICollection<EmployeeJobHistory> JobHistory { get; set; } = new List<EmployeeJobHistory>();
+    public ICollection<EmployeeStatusHistory> StatusHistory { get; set; } = new List<EmployeeStatusHistory>();
+}
+
+public sealed class EmployeePersonalInfo : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string FirstName { get; set; } = string.Empty;
+    public string? MiddleName { get; set; }
+    public string LastName { get; set; } = string.Empty;
+    public DateOnly DateOfBirth { get; set; }
+    public string Gender { get; set; } = string.Empty;
+    public string? MaritalStatus { get; set; }
+    public string? Nationality { get; set; }
+}
+
+public sealed class EmployeeContactInfo : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string WorkEmail { get; set; } = string.Empty;
+    public string? PersonalEmail { get; set; }
+    public string? Phone { get; set; }
+    public string? Address { get; set; }
+    public string? City { get; set; }
+    public string? State { get; set; }
+    public string? Country { get; set; }
+}
+
+public sealed class EmployeeEmploymentInfo : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid? DepartmentId { get; set; }
+    public Department? Department { get; set; }
+    public Guid? UnitId { get; set; }
+    public Unit? Unit { get; set; }
+    public Guid? BranchId { get; set; }
+    public Branch? Branch { get; set; }
+    public Guid? JobTitleId { get; set; }
+    public JobTitle? JobTitle { get; set; }
+    public Guid? GradeLevelId { get; set; }
+    public GradeLevel? GradeLevel { get; set; }
+    public Guid? EmploymentTypeId { get; set; }
+    public EmploymentType? EmploymentType { get; set; }
+    public Guid? LineManagerId { get; set; }
+    public User? LineManager { get; set; }
+    public DateOnly HireDate { get; set; }
+    public DateOnly? ConfirmationDate { get; set; }
+}
+
+public sealed class EmployeeBankInfo : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string BankName { get; set; } = string.Empty;
+    public string? BankCode { get; set; }
+    public string AccountNumberEncrypted { get; set; } = string.Empty;
+    public string AccountName { get; set; } = string.Empty;
+}
+
+public sealed class EmployeeNextOfKin : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Relationship { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public string? Address { get; set; }
+}
+
+public sealed class EmployeeEmergencyContact : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Relationship { get; set; } = string.Empty;
+    public string Phone { get; set; } = string.Empty;
+    public string? Email { get; set; }
+    public string? Address { get; set; }
+    public int Priority { get; set; }
+}
+
+public sealed class EmployeeJobHistory : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public Guid? FromJobTitleId { get; set; }
+    public JobTitle? FromJobTitle { get; set; }
+    public Guid? ToJobTitleId { get; set; }
+    public JobTitle? ToJobTitle { get; set; }
+    public Guid? FromDepartmentId { get; set; }
+    public Department? FromDepartment { get; set; }
+    public Guid? ToDepartmentId { get; set; }
+    public Department? ToDepartment { get; set; }
+    public DateOnly EffectiveDate { get; set; }
+    public string? Reason { get; set; }
+}
+
+public sealed class EmployeeStatusHistory : SoftDeleteEntity
+{
+    public Guid EmployeeId { get; set; }
+    public Employee? Employee { get; set; }
+    public string OldStatus { get; set; } = string.Empty;
+    public string NewStatus { get; set; } = string.Empty;
+    public DateOnly EffectiveDate { get; set; }
+    public string? Reason { get; set; }
+    public string? ChangedBy { get; set; }
 }
 
 public sealed class EmployeeDocument : SoftDeleteEntity
 {
     public Guid EmployeeId { get; set; }
     public Employee? Employee { get; set; }
-    public string DocumentType { get; set; } = string.Empty;
+    public Guid? DocumentTypeId { get; set; }
+    public DocumentType? DocumentType { get; set; }
+    public string LegacyDocumentType { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
     public string FileName { get; set; } = string.Empty;
     public string StorageKey { get; set; } = string.Empty;
+    public DateOnly? IssueDate { get; set; }
     public DateTime? ExpiryDate { get; set; }
     public string VerificationStatus { get; set; } = "Pending";
+    public bool ConfidentialFlag { get; set; }
+    public bool IsArchived { get; set; }
+    public ICollection<DocumentVerificationHistory> VerificationHistory { get; set; } = new List<DocumentVerificationHistory>();
+    public DocumentStorageReference? StorageReference { get; set; }
+}
+
+public sealed class DocumentType : SoftDeleteEntity
+{
+    public string Code { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string AllowedExtensions { get; set; } = ".pdf,.doc,.docx,.jpg,.jpeg,.png";
+    public long MaxFileSize { get; set; } = 5 * 1024 * 1024;
+    public bool RequiresExpiry { get; set; }
+    public bool RequiresVerification { get; set; } = true;
+    public string ConfidentialityLevel { get; set; } = "Internal";
+    public string Status { get; set; } = "Active";
+    public bool IsActive { get; set; } = true;
+    public ICollection<EmployeeDocument> EmployeeDocuments { get; set; } = new List<EmployeeDocument>();
+    public ICollection<DocumentAccessRule> AccessRules { get; set; } = new List<DocumentAccessRule>();
+}
+
+public sealed class DocumentAccessRule : SoftDeleteEntity
+{
+    public Guid DocumentTypeId { get; set; }
+    public DocumentType? DocumentType { get; set; }
+    public Guid RoleId { get; set; }
+    public Role? Role { get; set; }
+    public string AccessLevel { get; set; } = "View";
+}
+
+public sealed class DocumentVerificationHistory : BaseEntity
+{
+    public Guid DocumentId { get; set; }
+    public EmployeeDocument? Document { get; set; }
+    public string Status { get; set; } = string.Empty;
+    public string? Comments { get; set; }
+    public Guid? VerifiedBy { get; set; }
+    public User? VerifiedByUser { get; set; }
+    public DateTime VerifiedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class DocumentStorageReference : SoftDeleteEntity
+{
+    public Guid DocumentId { get; set; }
+    public EmployeeDocument? Document { get; set; }
+    public string StorageProvider { get; set; } = "Local";
+    public string? ContainerName { get; set; }
+    public string BlobKey { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public string ContentType { get; set; } = string.Empty;
+    public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
 }
 
 public sealed class HRRequest : SoftDeleteEntity

@@ -14,4 +14,16 @@ public sealed class LocalFileStorageService : IFileStorageService
         await stream.CopyToAsync(file, cancellationToken);
         return key;
     }
+
+    public Task<Stream> OpenReadAsync(string storageKey, CancellationToken cancellationToken = default)
+    {
+        var folder = Path.Combine(AppContext.BaseDirectory, "uploads");
+        var path = Path.Combine(folder, Path.GetFileName(storageKey));
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException("Stored file was not found.", storageKey);
+        }
+
+        return Task.FromResult<Stream>(File.OpenRead(path));
+    }
 }
