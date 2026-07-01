@@ -140,6 +140,14 @@ public interface IApplicationDbContext : IAsyncDisposable
     DbSet<EmployeeSkill> EmployeeSkills { get; set; }
     DbSet<TrainingCost> TrainingCosts { get; set; }
     DbSet<TrainingHistory> TrainingHistories { get; set; }
+    DbSet<ReportDefinition> ReportDefinitions { get; set; }
+    DbSet<ReportPermission> ReportPermissions { get; set; }
+    DbSet<ReportExportJob> ReportExportJobs { get; set; }
+    DbSet<ReportExportFile> ReportExportFiles { get; set; }
+    DbSet<DashboardCard> DashboardCards { get; set; }
+    DbSet<DashboardRoleMapping> DashboardRoleMappings { get; set; }
+    DbSet<DashboardMetricSnapshot> DashboardMetricSnapshots { get; set; }
+    DbSet<ReportAuditLog> ReportAuditLogs { get; set; }
     DbSet<Notification> Notifications { get; set; }
     DbSet<NotificationTemplate> NotificationTemplates { get; set; }
     DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
