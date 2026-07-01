@@ -38,6 +38,8 @@ public static class PermissionConstants
     public const string RecruitmentManage = "Recruitment.Manage";
     public const string TrainingView = "Training.View";
     public const string TrainingManage = "Training.Manage";
+    public const string DashboardView = "Dashboard.View";
+    public const string ReportView = "Report.View";
     public const string ReportExport = "Report.Export";
     public const string SettingsManage = "Settings.Manage";
     public const string AuditView = "Audit.View";
@@ -55,6 +57,7 @@ public static class PermissionConstants
         ExitView, ExitManage,
         LeaveApply, LeaveApprove, PayrollView, PayrollManage, PayrollProcess,
         PerformanceView, PerformanceManage, RecruitmentView, RecruitmentManage, TrainingView, TrainingManage,
+        DashboardView, ReportView,
         ReportExport,
         SettingsManage, AuditView, AuditExport,
         "User.View", "User.Create", "User.Edit", "User.Deactivate",

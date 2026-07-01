@@ -17,6 +17,7 @@ using PeopleGrid.Application.Features.Organization.Interfaces;
 using PeopleGrid.Application.Features.Payroll.Interfaces;
 using PeopleGrid.Application.Features.Performance.Interfaces;
 using PeopleGrid.Application.Features.Recruitment.Interfaces;
+using PeopleGrid.Application.Features.Reports.Interfaces;
 using PeopleGrid.Application.Features.Roles.Interfaces;
 using PeopleGrid.Application.Features.Settings.Interfaces;
 using PeopleGrid.Application.Features.Training.Interfaces;
@@ -81,6 +82,7 @@ public static class DependencyInjection
         services.AddScoped<IPerformanceService, PerformanceService>();
         services.AddScoped<IRecruitmentService, RecruitmentService>();
         services.AddScoped<ITrainingService, TrainingService>();
+        services.AddScoped<IReportService, ReportService>();
         services.AddScoped<RolePermissionSeeder>();
 
         return services;
