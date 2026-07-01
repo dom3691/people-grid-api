@@ -1646,6 +1646,92 @@ public sealed class TrainingHistory : BaseEntity
     public DateTime? CompletedAt { get; set; }
 }
 
+public sealed class ReportDefinition : SoftDeleteEntity
+{
+    public string ReportCode { get; set; } = string.Empty;
+    public string Name { get; set; } = string.Empty;
+    public string Module { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string? FiltersJson { get; set; }
+    public string? Permissions { get; set; }
+    public bool IsActive { get; set; } = true;
+    public ICollection<ReportPermission> ReportPermissions { get; set; } = new List<ReportPermission>();
+}
+
+public sealed class ReportPermission : SoftDeleteEntity
+{
+    public Guid ReportId { get; set; }
+    public ReportDefinition? Report { get; set; }
+    public Guid RoleId { get; set; }
+    public Role? Role { get; set; }
+    public bool CanView { get; set; } = true;
+    public bool CanExport { get; set; }
+}
+
+public sealed class ReportExportJob : SoftDeleteEntity
+{
+    public Guid ReportId { get; set; }
+    public ReportDefinition? Report { get; set; }
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public string? FiltersJson { get; set; }
+    public string Format { get; set; } = "Excel";
+    public string Status { get; set; } = "Queued";
+    public DateTime RequestedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? CompletedAt { get; set; }
+    public ReportExportFile? ExportFile { get; set; }
+}
+
+public sealed class ReportExportFile : SoftDeleteEntity
+{
+    public Guid ExportJobId { get; set; }
+    public ReportExportJob? ExportJob { get; set; }
+    public string FileName { get; set; } = string.Empty;
+    public string StorageKey { get; set; } = string.Empty;
+    public long FileSize { get; set; }
+    public DateTime GeneratedAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class DashboardCard : SoftDeleteEntity
+{
+    public string CardCode { get; set; } = string.Empty;
+    public string Title { get; set; } = string.Empty;
+    public string MetricQuery { get; set; } = string.Empty;
+    public string Module { get; set; } = string.Empty;
+    public int DisplayOrder { get; set; }
+    public bool IsActive { get; set; } = true;
+    public ICollection<DashboardRoleMapping> RoleMappings { get; set; } = new List<DashboardRoleMapping>();
+}
+
+public sealed class DashboardRoleMapping : SoftDeleteEntity
+{
+    public Guid CardId { get; set; }
+    public DashboardCard? Card { get; set; }
+    public Guid RoleId { get; set; }
+    public Role? Role { get; set; }
+    public string Scope { get; set; } = "enterprise";
+}
+
+public sealed class DashboardMetricSnapshot : BaseEntity
+{
+    public Guid CardId { get; set; }
+    public DashboardCard? Card { get; set; }
+    public string Period { get; set; } = string.Empty;
+    public decimal Value { get; set; }
+    public DateTime SnapshotAt { get; set; } = DateTime.UtcNow;
+}
+
+public sealed class ReportAuditLog : BaseEntity
+{
+    public Guid UserId { get; set; }
+    public User? User { get; set; }
+    public Guid ReportId { get; set; }
+    public ReportDefinition? Report { get; set; }
+    public string Action { get; set; } = "view";
+    public string? FiltersJson { get; set; }
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+}
+
 public sealed class Notification : SoftDeleteEntity
 {
     public Guid RecipientUserId { get; set; }

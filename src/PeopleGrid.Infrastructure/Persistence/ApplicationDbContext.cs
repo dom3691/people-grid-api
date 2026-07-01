@@ -143,6 +143,14 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     public DbSet<EmployeeSkill> EmployeeSkills { get; set; }
     public DbSet<TrainingCost> TrainingCosts { get; set; }
     public DbSet<TrainingHistory> TrainingHistories { get; set; }
+    public DbSet<ReportDefinition> ReportDefinitions { get; set; }
+    public DbSet<ReportPermission> ReportPermissions { get; set; }
+    public DbSet<ReportExportJob> ReportExportJobs { get; set; }
+    public DbSet<ReportExportFile> ReportExportFiles { get; set; }
+    public DbSet<DashboardCard> DashboardCards { get; set; }
+    public DbSet<DashboardRoleMapping> DashboardRoleMappings { get; set; }
+    public DbSet<DashboardMetricSnapshot> DashboardMetricSnapshots { get; set; }
+    public DbSet<ReportAuditLog> ReportAuditLogs { get; set; }
     public DbSet<Notification> Notifications { get; set; }
     public DbSet<NotificationTemplate> NotificationTemplates { get; set; }
     public DbSet<NotificationDeliveryLog> NotificationDeliveryLogs { get; set; }
@@ -720,6 +728,40 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<TrainingCost>().Property(x => x.Amount).HasPrecision(18, 2);
         modelBuilder.Entity<TrainingCost>().ToTable(t => t.HasCheckConstraint("CK_TrainingCosts_Amount", "[Amount] >= 0"));
         modelBuilder.Entity<TrainingHistory>().HasIndex(x => new { x.EmployeeId, x.ProgramId });
+        modelBuilder.Entity<ReportDefinition>().HasIndex(x => x.ReportCode).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ReportDefinition>().HasIndex(x => new { x.Module, x.IsActive });
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.ReportCode).HasMaxLength(100);
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.Name).HasMaxLength(150);
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.Module).HasMaxLength(100);
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.Description).HasMaxLength(500);
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.FiltersJson).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<ReportDefinition>().Property(x => x.Permissions).HasMaxLength(500);
+        modelBuilder.Entity<ReportPermission>().HasIndex(x => new { x.ReportId, x.RoleId }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ReportExportJob>().HasIndex(x => new { x.UserId, x.Status, x.RequestedAt });
+        modelBuilder.Entity<ReportExportJob>().HasIndex(x => new { x.ReportId, x.RequestedAt });
+        modelBuilder.Entity<ReportExportJob>().Property(x => x.FiltersJson).HasColumnType("nvarchar(max)");
+        modelBuilder.Entity<ReportExportJob>().Property(x => x.Format).HasMaxLength(20);
+        modelBuilder.Entity<ReportExportJob>().Property(x => x.Status).HasMaxLength(50);
+        modelBuilder.Entity<ReportExportJob>().ToTable(t => t.HasCheckConstraint("CK_ReportExportJobs_Format", "[Format] IN ('PDF', 'Excel')"));
+        modelBuilder.Entity<ReportExportJob>().ToTable(t => t.HasCheckConstraint("CK_ReportExportJobs_Status", "[Status] IN ('Queued', 'Processing', 'Completed', 'Failed')"));
+        modelBuilder.Entity<ReportExportFile>().HasIndex(x => x.ExportJobId).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<ReportExportFile>().Property(x => x.FileName).HasMaxLength(255);
+        modelBuilder.Entity<ReportExportFile>().Property(x => x.StorageKey).HasMaxLength(500);
+        modelBuilder.Entity<DashboardCard>().HasIndex(x => x.CardCode).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<DashboardCard>().HasIndex(x => new { x.Module, x.IsActive, x.DisplayOrder });
+        modelBuilder.Entity<DashboardCard>().Property(x => x.CardCode).HasMaxLength(100);
+        modelBuilder.Entity<DashboardCard>().Property(x => x.Title).HasMaxLength(150);
+        modelBuilder.Entity<DashboardCard>().Property(x => x.MetricQuery).HasMaxLength(500);
+        modelBuilder.Entity<DashboardCard>().Property(x => x.Module).HasMaxLength(100);
+        modelBuilder.Entity<DashboardRoleMapping>().HasIndex(x => new { x.CardId, x.RoleId, x.Scope }).IsUnique().HasFilter("[IsDeleted] = 0");
+        modelBuilder.Entity<DashboardRoleMapping>().Property(x => x.Scope).HasMaxLength(50);
+        modelBuilder.Entity<DashboardMetricSnapshot>().HasIndex(x => new { x.CardId, x.Period, x.SnapshotAt });
+        modelBuilder.Entity<DashboardMetricSnapshot>().Property(x => x.Period).HasMaxLength(50);
+        modelBuilder.Entity<DashboardMetricSnapshot>().Property(x => x.Value).HasPrecision(18, 2);
+        modelBuilder.Entity<ReportAuditLog>().HasIndex(x => new { x.UserId, x.Timestamp });
+        modelBuilder.Entity<ReportAuditLog>().HasIndex(x => new { x.ReportId, x.Action, x.Timestamp });
+        modelBuilder.Entity<ReportAuditLog>().Property(x => x.Action).HasMaxLength(50);
+        modelBuilder.Entity<ReportAuditLog>().Property(x => x.FiltersJson).HasColumnType("nvarchar(max)");
         modelBuilder.Entity<UserRole>().HasIndex(x => new { x.UserId, x.RoleId }).IsUnique();
         modelBuilder.Entity<RolePermission>().HasIndex(x => new { x.RoleId, x.PermissionId }).IsUnique();
         modelBuilder.Entity<UserRole>().Property(x => x.AssignedBy).HasMaxLength(100);
@@ -1342,6 +1384,16 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
         modelBuilder.Entity<TrainingCost>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TrainingHistory>().HasOne(x => x.Employee).WithMany().HasForeignKey(x => x.EmployeeId).OnDelete(DeleteBehavior.Restrict);
         modelBuilder.Entity<TrainingHistory>().HasOne(x => x.Program).WithMany().HasForeignKey(x => x.ProgramId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportPermission>().HasOne(x => x.Report).WithMany(x => x.ReportPermissions).HasForeignKey(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportPermission>().HasOne(x => x.Role).WithMany().HasForeignKey(x => x.RoleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportExportJob>().HasOne(x => x.Report).WithMany().HasForeignKey(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportExportJob>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportExportFile>().HasOne(x => x.ExportJob).WithOne(x => x.ExportFile).HasForeignKey<ReportExportFile>(x => x.ExportJobId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DashboardRoleMapping>().HasOne(x => x.Card).WithMany(x => x.RoleMappings).HasForeignKey(x => x.CardId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DashboardRoleMapping>().HasOne(x => x.Role).WithMany().HasForeignKey(x => x.RoleId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<DashboardMetricSnapshot>().HasOne(x => x.Card).WithMany().HasForeignKey(x => x.CardId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportAuditLog>().HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Restrict);
+        modelBuilder.Entity<ReportAuditLog>().HasOne(x => x.Report).WithMany().HasForeignKey(x => x.ReportId).OnDelete(DeleteBehavior.Restrict);
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes().Where(t => typeof(SoftDeleteEntity).IsAssignableFrom(t.ClrType)))
         {
@@ -1381,7 +1433,7 @@ public sealed class ApplicationDbContext(DbContextOptions<ApplicationDbContext> 
     private void EnforceAppendOnlyLogs()
     {
         var immutableEntries = ChangeTracker.Entries()
-            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory || x.Entity is HRRequestStatusHistory || x.Entity is ApprovalAction || x.Entity is NotificationDeliveryLog || x.Entity is LeaveApprovalAction || x.Entity is AttendanceApprovalAction || x.Entity is PolicyAcknowledgement || x.Entity is DisciplinaryResponse || x.Entity is DisciplinaryReview || x.Entity is ExitApprovalAction || x.Entity is ExitInterviewResponse || x.Entity is PayrollApprovalAction || x.Entity is PayrollAuditHistory || x.Entity is SelfAssessment || x.Entity is ManagerAssessment || x.Entity is HrPerformanceReview || x.Entity is PerformanceHistory || x.Entity is InterviewFeedback || x.Entity is RecruitmentStatusHistory || x.Entity is TrainingApprovalAction || x.Entity is TrainingAttendance || x.Entity is TrainingFeedback || x.Entity is TrainingHistory) &&
+            .Where(x => (x.Entity is AuditLog || x.Entity is AuditLogDetail || x.Entity is LoginAttempt || x.Entity is DocumentVerificationHistory || x.Entity is HRRequestStatusHistory || x.Entity is ApprovalAction || x.Entity is NotificationDeliveryLog || x.Entity is LeaveApprovalAction || x.Entity is AttendanceApprovalAction || x.Entity is PolicyAcknowledgement || x.Entity is DisciplinaryResponse || x.Entity is DisciplinaryReview || x.Entity is ExitApprovalAction || x.Entity is ExitInterviewResponse || x.Entity is PayrollApprovalAction || x.Entity is PayrollAuditHistory || x.Entity is SelfAssessment || x.Entity is ManagerAssessment || x.Entity is HrPerformanceReview || x.Entity is PerformanceHistory || x.Entity is InterviewFeedback || x.Entity is RecruitmentStatusHistory || x.Entity is TrainingApprovalAction || x.Entity is TrainingAttendance || x.Entity is TrainingFeedback || x.Entity is TrainingHistory || x.Entity is DashboardMetricSnapshot || x.Entity is ReportAuditLog) &&
                         (x.State == EntityState.Modified || x.State == EntityState.Deleted));
 
         foreach (var entry in immutableEntries)
